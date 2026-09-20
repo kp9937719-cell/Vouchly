@@ -1,4 +1,4 @@
-﻿"""
+"""
 auth.py — Authentication Module
 =================================
 Handles all authentication routes and JWT helpers.
@@ -38,7 +38,7 @@ from utils import (
     success_response, error_response,
     is_valid_email, validate_password_strength,
     generate_secure_token, serialize_doc, utcnow,
-    create_notification
+    create_notification, send_email
 )
 
 # Create the auth Blueprint — all routes will be /api/auth/...
@@ -350,14 +350,14 @@ def signup():
     existing = db.owners.find_one({"email": email})
     if existing:
         return jsonify(error_response(
-            "If this email is not already registered, you will receive a verification email shortly.",
+            "An account with this email already exists. Please log in instead.",
             409
         )[0]), 409
 
     # --- Hash the password (never store plaintext) ---
     password_hash = generate_password_hash(password)
 
-    # --- Create the owner document ---
+    # --- Create the owner document (unverified until email link is clicked) ---
     now = utcnow()
     owner_doc = {
         "full_name": full_name,
@@ -372,30 +372,75 @@ def signup():
     result = db.owners.insert_one(owner_doc)
     owner_id = str(result.inserted_id)
 
-    # --- Generate signed itsdangerous token ---
+    # --- Generate signed itsdangerous verification token ---
     token = generate_verification_token(email)
-
-    # Build verification URL
     base_url = current_app.config.get("PUBLIC_BASE_URL") or current_app.config.get("APP_BASE_URL", "http://localhost:5000")
     verify_url = f"{base_url.rstrip('/')}/verify-email/{token}"
 
-    # Log to development console (clearly stating simulation mode)
+    # --- Build HTML email body ---
+    html_body = f"""
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#fff;">
+      <div style="text-align:center;margin-bottom:28px;">
+        <h1 style="font-size:28px;color:#1a1a1a;margin:0;">Vouchly</h1>
+        <p style="color:#888;font-size:13px;margin:4px 0 0;">Turn Feedback Into Trust</p>
+      </div>
+      <h2 style="font-size:20px;color:#1a1a1a;">Hi {full_name}, verify your email</h2>
+      <p style="color:#444;line-height:1.6;">
+        Thank you for signing up for Vouchly! Please click the button below to
+        verify your email address and activate your account.
+      </p>
+      <div style="text-align:center;margin:32px 0;">
+        <a href="{verify_url}"
+           style="background:#B89A5A;color:#fff;padding:14px 32px;border-radius:8px;
+                  text-decoration:none;font-weight:bold;font-size:15px;display:inline-block;">
+          Verify My Email
+        </a>
+      </div>
+      <p style="color:#888;font-size:13px;line-height:1.5;">
+        This link expires in <strong>1 hour</strong>. If you did not create a Vouchly account,
+        you can safely ignore this email.
+      </p>
+      <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+      <p style="color:#bbb;font-size:12px;">
+        Or copy this link into your browser:<br>
+        <a href="{verify_url}" style="color:#B89A5A;word-break:break-all;">{verify_url}</a>
+      </p>
+    </div>
+    """
+    text_body = (
+        f"Hi {full_name},\n\n"
+        f"Verify your Vouchly email address by visiting:\n{verify_url}\n\n"
+        f"This link expires in 1 hour.\n\nIf you did not sign up, ignore this email."
+    )
+
+    # --- Send the email ---
+    sent, err = send_email(
+        to_email=email,
+        subject="Verify your Vouchly email address",
+        html_body=html_body,
+        text_body=text_body,
+    )
+
+    # Log the link to console regardless (helpful in dev)
     log_development_verification_link(email, verify_url)
 
-    is_dev = current_app.config.get("FLASK_ENV") == "development" or current_app.config.get("DEV_EMAIL_SIMULATE")
+    is_dev = (current_app.config.get("FLASK_ENV") == "development")
     resp_data = {
         "owner_id": owner_id,
         "email": email,
+        "email_sent": sent,
     }
-    if is_dev:
+    if not sent:
+        resp_data["email_error"] = err
+        if is_dev:
+            resp_data["verify_link"] = verify_url
+    elif is_dev and (current_app.config.get("DEV_EMAIL_SIMULATE") or not current_app.config.get("MAIL_USERNAME")):
         resp_data["verify_link"] = verify_url
         resp_data["is_dev"] = True
 
-    return jsonify(success_response(
-        resp_data,
-        "Your account has been created. Please verify your email address to continue.",
-        201
-    )[0]), 201
+    msg = ("Your account has been created. Please check your email and click the "
+           "verification link to activate your account.")
+    return jsonify(success_response(resp_data, msg, 201)[0]), 201
 
 
 @auth_bp.route("/verify-email", methods=["POST"])
@@ -467,7 +512,9 @@ def resend_verification():
     owner = db.owners.find_one({"email": email})
 
     # Always return a safe generic message in production to prevent account enumeration
-    is_dev = current_app.config.get("FLASK_ENV") == "development" or current_app.config.get("DEV_EMAIL_SIMULATE")
+    is_dev = (current_app.config.get("FLASK_ENV") == "development") and (
+        current_app.config.get("DEV_EMAIL_SIMULATE") or not current_app.config.get("MAIL_USERNAME")
+    )
     generic_msg = "If an unverified account with that email exists, a new verification link has been generated."
 
     if not owner:
@@ -484,9 +531,59 @@ def resend_verification():
     base_url = current_app.config.get("PUBLIC_BASE_URL") or current_app.config.get("APP_BASE_URL", "http://localhost:5000")
     verify_url = f"{base_url.rstrip('/')}/verify-email/{token}"
 
+    # Build and send email
+    owner_name = owner.get("full_name", "there")
+    html_body = f"""
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#fff;">
+      <div style="text-align:center;margin-bottom:28px;">
+        <h1 style="font-size:28px;color:#1a1a1a;margin:0;">Vouchly</h1>
+        <p style="color:#888;font-size:13px;margin:4px 0 0;">Turn Feedback Into Trust</p>
+      </div>
+      <h2 style="font-size:20px;color:#1a1a1a;">Hi {owner_name}, verify your email</h2>
+      <p style="color:#444;line-height:1.6;">
+        Here is your requested verification link for Vouchly. Please click the button below to verify your email address and activate your account.
+      </p>
+      <div style="text-align:center;margin:32px 0;">
+        <a href="{verify_url}"
+           style="background:#B89A5A;color:#fff;padding:14px 32px;border-radius:8px;
+                  text-decoration:none;font-weight:bold;font-size:15px;display:inline-block;">
+          Verify My Email
+        </a>
+      </div>
+      <p style="color:#888;font-size:13px;line-height:1.5;">
+        This link expires in <strong>1 hour</strong>. If you did not request this, you can safely ignore this email.
+      </p>
+      <hr style="border:none;border-top:1px solid #eee;margin:24px 0;">
+      <p style="color:#bbb;font-size:12px;">
+        Or copy this link into your browser:<br>
+        <a href="{verify_url}" style="color:#B89A5A;word-break:break-all;">{verify_url}</a>
+      </p>
+    </div>
+    """
+    text_body = (
+        f"Hi {owner_name},\n\n"
+        f"Verify your Vouchly email address by visiting:\n{verify_url}\n\n"
+        f"This link expires in 1 hour.\n\nIf you did not request this, ignore this email."
+    )
+
+    sent, err = send_email(
+        to_email=email,
+        subject="Verify your Vouchly email address (New Link)",
+        html_body=html_body,
+        text_body=text_body,
+    )
+
     log_development_verification_link(email, verify_url)
 
-    resp_data = {}
+    resp_data = {
+        "email_sent": sent,
+    }
+    if not sent:
+        resp_data["email_error"] = err
+        resp_data["verify_link"] = verify_url
+        msg = f"Email delivery failed ({err}). Use the link below to verify your account."
+        return jsonify(success_response(resp_data, message=msg)[0]), 200
+
     if is_dev:
         resp_data["verify_link"] = verify_url
         resp_data["is_dev"] = True
@@ -661,10 +758,40 @@ def forgot_password():
 
     base_url = current_app.config["APP_BASE_URL"]
     reset_link = f"{base_url}/reset-password?token={token}"
-    simulate_email(
+    owner_name = owner.get("full_name", "there")
+    html_body = f"""
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:32px 24px;background:#fff;">
+      <div style="text-align:center;margin-bottom:28px;">
+        <h1 style="font-size:28px;color:#1a1a1a;margin:0;">Vouchly</h1>
+        <p style="color:#888;font-size:13px;margin:4px 0 0;">Turn Feedback Into Trust</p>
+      </div>
+      <h2 style="font-size:20px;color:#1a1a1a;">Hi {owner_name}, reset your password</h2>
+      <p style="color:#444;line-height:1.6;">
+        We received a request to reset your Vouchly account password. Click the button below to choose a new password.
+      </p>
+      <div style="text-align:center;margin:32px 0;">
+        <a href="{reset_link}"
+           style="background:#B89A5A;color:#fff;padding:14px 32px;border-radius:8px;
+                  text-decoration:none;font-weight:bold;font-size:15px;display:inline-block;">
+          Reset Password
+        </a>
+      </div>
+      <p style="color:#888;font-size:13px;line-height:1.5;">
+        This link expires in <strong>1 hour</strong>. If you did not request this, you can safely ignore this email.
+      </p>
+    </div>
+    """
+    text_body = (
+        f"Hi {owner_name},\n\n"
+        f"Reset your password here:\n{reset_link}\n\n"
+        f"This link expires in 1 hour. If you did not request this, ignore this email."
+    )
+
+    send_email(
         to_email=email,
         subject="Reset your Vouchly password",
-        body=f"Hi {owner['full_name']},\n\nReset your password here:\n{reset_link}\n\nThis link expires in 1 hour. If you did not request this, ignore this email."
+        html_body=html_body,
+        text_body=text_body,
     )
 
     return jsonify(success_response(message=generic_msg)[0]), 200

@@ -75,6 +75,11 @@
           <a href="/forgot-password" class="auth-link">Forgot password?</a>
         </div>
 
+        <div class="form-alert form-alert--success" id="signupSuccess" style="display:none">
+          <i class="fa-solid fa-circle-check"></i>
+          Account created successfully! Please sign in below.
+        </div>
+
         <div class="form-alert form-alert--error" id="formError" style="display:none"></div>
 
         <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
@@ -91,5 +96,14 @@
 <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 <script>
   initLoginForm();
+
+  // Show success banner if coming from the signup page
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('signup') === 'success') {
+    const banner = document.getElementById('signupSuccess');
+    if (banner) banner.style.display = 'block';
+    // Clean the URL without reloading so the param doesn't persist on refresh
+    window.history.replaceState({}, '', '/login');
+  }
 </script>
 {% endblock %}

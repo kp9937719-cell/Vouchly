@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}Verify Your Email — Vouchly{% endblock %}
 {% block body_class %}auth-body{% endblock %}
 {% block extra_css %}
@@ -14,22 +14,39 @@
 
     <h1 class="auth-title">Verify Your Email</h1>
     <p class="auth-subtitle">
-      Your account has been created. Please verify your email address to continue.
+      Your account has been created! A verification link has been sent to your email address. Please check your inbox (or Spam folder) and click the link to activate your account.
     </p>
 
     {% if email %}
     <div style="margin: 1rem 0; padding: 0.6rem 1rem; background: var(--ivory); border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 500; color: var(--charcoal); word-break: break-all;">
-      <i class="fa-solid fa-user-check" style="margin-right: 0.4rem; color: var(--gold);"></i> {{ email }}
+      <i class="fa-solid fa-envelope" style="margin-right: 0.4rem; color: var(--gold);"></i> {{ email }}
     </div>
+
+    <a href="https://mail.google.com" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-block" style="text-decoration:none; margin: 0.75rem 0 1rem; display:inline-flex; justify-content:center; align-items:center; gap:0.5rem;">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Gmail
+    </a>
     {% endif %}
 
-    {% if is_dev and verify_link %}
+    {% if email_error and verify_link %}
+    <div style="margin-top: 1.25rem; padding: 1.25rem; background: #FFF9E6; border: 1px solid #FFE082; border-radius: var(--radius-md); text-align: left;">
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom: 0.5rem; color: #B78103; font-weight: 700; font-size: 0.85rem;">
+        <i class="fa-solid fa-triangle-exclamation"></i> Gmail SMTP Notice
+      </div>
+      <p style="margin: 0 0 0.75rem 0; font-size: 0.85rem; color: #5D4037; line-height: 1.5;">
+        Google rejected the email login: <code>{{ email_error }}</code>.
+        <br>You can complete your account verification right now using this button:
+      </p>
+      <a href="{{ verify_link }}" class="btn btn-primary btn-block" style="text-decoration:none; margin-bottom:0.5rem;">
+        <i class="fa-solid fa-shield-check"></i> Complete Verification Now
+      </a>
+    </div>
+    {% elif is_dev and verify_link %}
     <div style="margin-top: 1.5rem; padding: 1.25rem; background: #FAF7F0; border: 1px dashed var(--gold); border-radius: var(--radius-md); text-align: left;">
       <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom: 0.5rem;">
         <span style="background: var(--gold); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em;">Development Mode</span>
       </div>
       <p style="margin: 0 0 0.75rem 0; font-size: 0.85rem; color: var(--charcoal); line-height: 1.5;">
-        <strong>Notice:</strong> No external email service is used. Use the local development link below to complete verification:
+        <strong>Notice:</strong> Use the link below to complete verification:
       </p>
       <a href="{{ verify_link }}" id="devVerifyBtn" class="btn btn-primary btn-block" style="text-decoration:none; margin-bottom:0.75rem;">
         <i class="fa-solid fa-shield-check"></i> Complete Verification Now

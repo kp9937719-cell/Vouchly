@@ -21,13 +21,73 @@ Contents:
 import os
 import re
 import secrets
+import smtplib
 import uuid
 from datetime import datetime, timezone
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 from bson import ObjectId
 from flask import current_app
 from werkzeug.utils import secure_filename
 from PIL import Image, UnidentifiedImageError
+
+
+# ─────────────────────────────────────────────
+# Email Sender
+# ─────────────────────────────────────────────
+
+def send_email(to_email: str, subject: str, html_body: str, text_body: str = "") -> tuple[bool, str]:
+    """
+    Send an email via Gmail SMTP (TLS on port 587).
+
+    Reads MAIL_* settings from the Flask app config (which loads from .env).
+    Falls back to printing to the console if DEV_EMAIL_SIMULATE is True or
+    if MAIL_USERNAME / MAIL_PASSWORD are not configured.
+
+    Returns:
+        (True, "")          on success
+        (False, "reason")   on failure
+    """
+    cfg = current_app.config
+
+    # ── Development simulation mode ──────────────────────────────────────────
+    if cfg.get("DEV_EMAIL_SIMULATE") or not cfg.get("MAIL_USERNAME") or not cfg.get("MAIL_PASSWORD"):
+        print("\n" + "=" * 60)
+        print("[EMAIL SIMULATION — no real email sent]")
+        print(f"  To      : {to_email}")
+        print(f"  Subject : {subject}")
+        print(f"  Body    :\n{text_body or html_body}")
+        print("=" * 60 + "\n")
+        return True, ""
+
+    # ── Real SMTP delivery ────────────────────────────────────────────────────
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = subject
+        msg["From"]    = cfg.get("MAIL_DEFAULT_SENDER") or cfg["MAIL_USERNAME"]
+        msg["To"]      = to_email
+
+        if text_body:
+            msg.attach(MIMEText(text_body, "plain"))
+        msg.attach(MIMEText(html_body, "html"))
+
+        with smtplib.SMTP(cfg["MAIL_SERVER"], cfg["MAIL_PORT"]) as server:
+            if cfg.get("MAIL_USE_TLS", True):
+                server.starttls()
+            server.login(cfg["MAIL_USERNAME"], cfg["MAIL_PASSWORD"])
+            server.sendmail(cfg["MAIL_USERNAME"], to_email, msg.as_string())
+
+        return True, ""
+
+    except smtplib.SMTPAuthenticationError:
+        err = "SMTP authentication failed. Check MAIL_USERNAME and MAIL_PASSWORD in .env"
+        print(f"[EMAIL ERROR] {err}")
+        return False, err
+    except Exception as exc:
+        err = f"Failed to send email: {exc}"
+        print(f"[EMAIL ERROR] {err}")
+        return False, err
 
 
 # ─────────────────────────────────────────────

@@ -179,7 +179,11 @@ function initSignupForm() {
 
     let valid = true;
     if (!full_name)     { showFieldError('full_name', 'Full name is required.'); valid = false; }
-    if (!email)         { showFieldError('email', 'Email is required.'); valid = false; }
+    if (!email) {
+      showFieldError('email', 'Email is required.'); valid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showFieldError('email', 'Please enter a valid email address (e.g. name@gmail.com).'); valid = false;
+    }
     if (!password) {
       showFieldError('password', 'Password is required.'); valid = false;
     } else if (password.length < 8) {
@@ -206,10 +210,13 @@ function initSignupForm() {
     setButtonLoading(btn, false);
 
     if (ok && data?.success) {
+      // Account created — redirect to verification pending page
       const verifyLink = data.data?.verify_link || '';
+      const emailError = data.data?.email_error || '';
       const emailParam = encodeURIComponent(email);
-      const linkParam = verifyLink ? `&verify_link=${encodeURIComponent(verifyLink)}` : '';
-      window.location.href = `/verification-pending?email=${emailParam}${linkParam}`;
+      const linkParam  = verifyLink ? `&verify_link=${encodeURIComponent(verifyLink)}` : '';
+      const errParam   = emailError ? `&email_error=${encodeURIComponent(emailError)}` : '';
+      window.location.href = `/verification-pending?email=${emailParam}${linkParam}${errParam}`;
     } else {
       // Show per-field errors if the API returned them
       if (data?.errors && typeof data.errors === 'object') {

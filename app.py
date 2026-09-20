@@ -1,4 +1,4 @@
-﻿"""
+"""
 app.py — Main Flask Application
 ==================================
 This is the entry point for Vouchly.
@@ -148,8 +148,15 @@ def create_app(config_object=None):
     def verification_pending_page():
         email = request.args.get("email", "")
         verify_link = request.args.get("verify_link", "")
+        email_error = request.args.get("email_error", "")
         is_dev = current_app.config.get("FLASK_ENV") == "development" or current_app.config.get("DEV_EMAIL_SIMULATE")
-        return render_template("verification_pending.html", email=email, verify_link=verify_link if is_dev else "", is_dev=is_dev)
+        return render_template(
+            "verification_pending.html",
+            email=email,
+            verify_link=verify_link if (is_dev or email_error) else "",
+            email_error=email_error,
+            is_dev=is_dev
+        )
 
     @app.route("/verify-email")
     @app.route("/verify-email/<token>")

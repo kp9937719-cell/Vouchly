@@ -1,4 +1,4 @@
-﻿"""
+"""
 config.py — Application Configuration
 ======================================
 Reads environment variables from the .env file and exposes them
@@ -53,4 +53,13 @@ class Config:
     # Token expiration in seconds (default: 3600 = 1 hour)
     EMAIL_VERIFICATION_MAX_AGE = int(os.environ.get("EMAIL_VERIFICATION_MAX_AGE", 3600))
     EMAIL_VERIFICATION_SALT = os.environ.get("EMAIL_VERIFICATION_SALT", "vouchly-email-verification-salt")
-    DEV_EMAIL_SIMULATE = os.environ.get("DEV_EMAIL_SIMULATE", "True").lower() == "true"
+    DEV_EMAIL_SIMULATE = os.environ.get("DEV_EMAIL_SIMULATE", "False").lower() == "true"
+
+    # ---- SMTP Email (Gmail) ----
+    # To use Gmail: enable 2FA → Google Account → Security → App Passwords → generate one
+    MAIL_SERVER   = os.environ.get("MAIL_SERVER",   "smtp.gmail.com")
+    MAIL_PORT     = int(os.environ.get("MAIL_PORT", 587))
+    MAIL_USE_TLS  = os.environ.get("MAIL_USE_TLS",  "True").lower() == "true"
+    MAIL_USERNAME = os.environ.get("MAIL_USERNAME", "")   # your Gmail address
+    MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "")   # your Gmail App Password
+    MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
