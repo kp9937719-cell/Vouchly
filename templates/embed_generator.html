@@ -1,0 +1,169 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Embed Generator — Vouchly{% endblock %}
+{% block page_title %}Embed Generator{% endblock %}
+{% block nav_embed %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Embed Generator</h1>
+    <p class="page-subtitle">Generate widget code to embed testimonials on any website.</p>
+  </div>
+</div>
+
+<div class="embed-layout">
+  <!-- Left: Controls -->
+  <div class="embed-controls">
+
+    <!-- Space selector -->
+    <div class="dash-card" style="margin-bottom:1.5rem">
+      <div class="form-group" style="margin-bottom:0">
+        <label for="embedSpaceSelect" class="form-label">Select space</label>
+        <select id="embedSpaceSelect" class="form-select">
+          <option value="">Loading spaces...</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="embedOptions" style="display:none">
+      <!-- Widget type -->
+      <div class="dash-card" style="margin-bottom:1.5rem">
+        <h3 class="embed-section-title">Widget Layout</h3>
+        <div class="layout-selector">
+          <label class="layout-option">
+            <input type="radio" name="layout" value="grid" checked />
+            <div class="layout-option-box">
+              <i class="fa-solid fa-table-cells"></i>
+              <span>Grid</span>
+            </div>
+          </label>
+          <label class="layout-option">
+            <input type="radio" name="layout" value="carousel" />
+            <div class="layout-option-box">
+              <i class="fa-solid fa-circle-dot"></i>
+              <span>Carousel</span>
+            </div>
+          </label>
+          <label class="layout-option">
+            <input type="radio" name="layout" value="badge" />
+            <div class="layout-option-box">
+              <i class="fa-solid fa-award"></i>
+              <span>Badge</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Customization -->
+      <div class="dash-card" style="margin-bottom:1.5rem">
+        <h3 class="embed-section-title">Customization</h3>
+
+        <div class="form-group">
+          <label class="form-label">Theme</label>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="theme" value="light" checked /> Light
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="theme" value="dark" /> Dark
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="embedCount" class="form-label">Number of testimonials: <strong id="countLabel">6</strong></label>
+          <input type="range" id="embedCount" name="count" min="1" max="20" value="6" class="range-input" />
+        </div>
+
+        <div class="form-group">
+          <label for="embedBrandColor" class="form-label">Brand color</label>
+          <div class="color-picker-wrapper">
+            <input type="color" id="embedBrandColor" name="brand_color" class="color-picker" value="#B89A5A" />
+            <input type="text" id="embedBrandColorText" class="form-input color-text-input" value="#B89A5A" maxlength="7" />
+          </div>
+        </div>
+
+        <div class="toggle-row toggle-row--sm">
+          <span>Show star ratings</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="showRatings" name="show_ratings" checked />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+        <div class="toggle-row toggle-row--sm">
+          <span>Show avatars</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="showAvatars" name="show_avatars" checked />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+        <div class="toggle-row toggle-row--sm">
+          <span>Show company names</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="showCompany" name="show_company" checked />
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="embed-actions">
+        <button class="btn btn-secondary" id="resetConfigBtn">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+        <button class="btn btn-primary" id="generateEmbedBtn">
+          <i class="fa-solid fa-code"></i> Generate Code
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Preview + Code -->
+  <div class="embed-preview-panel">
+
+    <!-- Live preview frame -->
+    <div class="dash-card" style="margin-bottom:1.5rem">
+      <div class="dash-card-header">
+        <h3 class="embed-section-title">Live Preview</h3>
+        <button class="text-btn" id="refreshPreviewBtn"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+      </div>
+      <div class="preview-frame-wrapper">
+        <iframe id="previewFrame" class="preview-frame" title="Widget preview" src="about:blank"></iframe>
+        <div class="preview-placeholder" id="previewPlaceholder">
+          <i class="fa-solid fa-eye"></i>
+          <p>Select a space and generate code to preview the widget.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generated code -->
+    <div id="embedCodeSection" style="display:none">
+      <!-- iframe embed -->
+      <div class="dash-card" style="margin-bottom:1.5rem">
+        <div class="dash-card-header">
+          <h3 class="embed-section-title">iframe Embed</h3>
+          <button class="btn btn-ghost btn-sm copy-btn" data-target="iframeCode">
+            <i class="fa-solid fa-copy"></i> Copy
+          </button>
+        </div>
+        <pre class="code-block" id="iframeCode"></pre>
+      </div>
+
+      <!-- HTML embed -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <h3 class="embed-section-title">HTML Embed</h3>
+          <button class="btn btn-ghost btn-sm copy-btn" data-target="htmlCode">
+            <i class="fa-solid fa-copy"></i> Copy
+          </button>
+        </div>
+        <pre class="code-block" id="htmlCode"></pre>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/embed.js') }}"></script>
+<script>initEmbedPage();</script>
+{% endblock %}

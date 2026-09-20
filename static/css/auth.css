@@ -1,0 +1,325 @@
+/*
+ * auth.css — Authentication Pages
+ * =================================
+ * Login, Signup, Forgot/Reset Password, Email Verify
+ */
+
+/* ── Auth Body ── */
+.auth-body {
+  min-height: 100vh;
+  background: var(--ivory);
+}
+
+/* ── Split-screen layout ── */
+.auth-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+/* ── Left Panel (Brand) ── */
+.auth-panel--left {
+  background: var(--black);
+  color: var(--ivory);
+  padding: var(--space-12) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--ivory);
+  font-weight: var(--fw-semibold);
+  font-size: 1.125rem;
+  text-decoration: none;
+  margin-bottom: var(--space-12);
+}
+
+.auth-logo .logo-mark {
+  background: var(--gold);
+  color: var(--black);
+}
+
+.auth-brand {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.auth-brand-headline {
+  font-family: var(--font-heading);
+  font-size: var(--text-4xl);
+  font-weight: var(--fw-semibold);
+  color: var(--ivory);
+  line-height: 1.15;
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.02em;
+}
+
+.auth-brand-sub {
+  color: rgba(248,246,240,0.65);
+  font-size: var(--text-base);
+  line-height: 1.7;
+  max-width: 380px;
+}
+
+/* ── Testimonial preview card on left panel ── */
+.auth-testimonial-preview {
+  margin-top: var(--space-10);
+}
+
+.auth-preview-card {
+  background: rgba(248,246,240,0.08);
+  border: 1px solid rgba(248,246,240,0.12);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  backdrop-filter: blur(8px);
+}
+
+.auth-preview-card .preview-stars {
+  color: var(--gold-warm);
+  font-size: 0.875rem;
+  margin-bottom: var(--space-3);
+}
+
+.auth-preview-card p {
+  color: rgba(248,246,240,0.85);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  margin-bottom: var(--space-3);
+}
+
+.auth-preview-card span {
+  color: rgba(248,246,240,0.5);
+  font-size: var(--text-xs);
+}
+
+/* ── Feature list on signup left panel ── */
+.auth-features-list {
+  margin-top: var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.auth-feature {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+  color: rgba(248,246,240,0.85);
+}
+
+.auth-feature i {
+  color: var(--gold);
+  font-size: 0.75rem;
+  width: 18px;
+  height: 18px;
+  background: rgba(184,154,90,0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Decorative circles ── */
+.auth-deco {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(184,154,90,0.06);
+  border: 1px solid rgba(184,154,90,0.08);
+}
+
+.deco-circle-1 {
+  width: 350px;
+  height: 350px;
+  top: -100px;
+  right: -100px;
+}
+
+.deco-circle-2 {
+  width: 200px;
+  height: 200px;
+  bottom: 60px;
+  left: -60px;
+}
+
+/* ── Right Panel (Form) ── */
+.auth-panel--right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10) var(--space-8);
+  background: var(--ivory);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-md);
+}
+
+.auth-card-header {
+  margin-bottom: var(--space-6);
+}
+
+/* Mobile logo (hidden on desktop) */
+.auth-mobile-logo {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text);
+  font-weight: var(--fw-semibold);
+  font-size: 1rem;
+  margin-bottom: var(--space-6);
+  text-decoration: none;
+}
+
+.auth-title {
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  margin-bottom: var(--space-2);
+  letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.auth-link {
+  color: var(--gold);
+  font-weight: var(--fw-medium);
+  text-decoration: none;
+}
+.auth-link:hover { text-decoration: underline; }
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-terms {
+  font-size: var(--text-xs);
+  color: var(--muted-text);
+  text-align: center;
+  margin-top: var(--space-4);
+  line-height: 1.6;
+}
+
+/* ── Password strength indicator ── */
+.password-strength {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+
+.strength-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 2px;
+  transition: width 0.3s ease, background 0.3s ease;
+}
+
+.strength-label {
+  font-size: var(--text-xs);
+  font-weight: var(--fw-medium);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* ── Centered auth card (verify, forgot, reset) ── */
+.auth-centered {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+  background: var(--ivory);
+}
+
+.auth-card--centered {
+  text-align: center;
+  max-width: 440px;
+}
+
+.auth-icon-display {
+  width: 64px;
+  height: 64px;
+  background: var(--soft-gray);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  color: var(--gold);
+  margin: 0 auto var(--space-5);
+}
+
+/* ── Nav button in landing (used in auth pages too) ── */
+.btn-nav {
+  padding: 0.5rem 1.125rem;
+  font-size: 0.875rem;
+}
+
+/* ── Mobile: stack to single column ── */
+@media (max-width: 768px) {
+  .auth-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-panel--left {
+    display: none;
+  }
+
+  .auth-mobile-logo {
+    display: flex;
+  }
+
+  .auth-panel--right {
+    padding: var(--space-6) var(--space-4);
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  .auth-card {
+    padding: var(--space-6);
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    max-width: 100%;
+  }
+
+  .auth-centered {
+    align-items: flex-start;
+    padding-top: var(--space-10);
+  }
+}

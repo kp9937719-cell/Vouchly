@@ -1,0 +1,172 @@
+﻿{% extends "base.html" %}
+{% block title %}Share Your Experience — Vouchly{% endblock %}
+{% block body_class %}collection-body{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/collection.css') }}" />
+{% endblock %}
+
+{% block body %}
+
+<!-- Loading state while fetching space config -->
+<div class="collection-loading" id="collectionLoading">
+  <div class="loader-spinner"></div>
+  <p>Loading...</p>
+</div>
+
+<!-- Error state for invalid/inactive spaces -->
+<div class="collection-error" id="collectionError" style="display:none">
+  <div class="error-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+  <h2 id="errorTitle">Space Not Found</h2>
+  <p id="errorMessage">This testimonial collection page is not available.</p>
+  <a href="/" class="btn btn-secondary" style="margin-top:1.5rem">Go to Vouchly</a>
+</div>
+
+<!-- Main collection form -->
+<div class="collection-wrapper" id="collectionWrapper" style="display:none">
+  <div class="collection-card">
+
+    <!-- Space branding header -->
+    <div class="collection-header" id="collectionHeader">
+      <div class="collection-logo" id="collectionLogo" style="display:none">
+        <img id="collectionLogoImg" src="" alt="Business logo" />
+      </div>
+      <h1 class="collection-heading" id="collectionHeading">Share Your Experience</h1>
+      <p class="collection-desc" id="collectionDesc"></p>
+    </div>
+
+    <!-- Submission form -->
+    <form id="testimonialForm" enctype="multipart/form-data" novalidate>
+      <input type="hidden" id="spaceSlug" value="{{ slug }}" />
+
+      <div class="form-grid-two">
+        <div class="form-group">
+          <label for="customer_name" class="form-label">Your name <span class="required">*</span></label>
+          <input type="text" id="customer_name" name="customer_name" class="form-input"
+                 placeholder="Jane Smith" autocomplete="name" required />
+          <span class="field-error" id="customer_nameError"></span>
+        </div>
+        <div class="form-group">
+          <label for="customer_email" class="form-label">Email address <span class="required">*</span></label>
+          <input type="email" id="customer_email" name="customer_email" class="form-input"
+                 placeholder="you@company.com" autocomplete="email" required />
+          <span class="field-error" id="customer_emailError"></span>
+        </div>
+      </div>
+
+      <div class="form-grid-two">
+        <div class="form-group">
+          <label for="company_name" class="form-label">Company</label>
+          <input type="text" id="company_name" name="company_name" class="form-input"
+                 placeholder="Your company" autocomplete="organization" />
+        </div>
+        <div class="form-group">
+          <label for="company_role" class="form-label">Your role</label>
+          <input type="text" id="company_role" name="company_role" class="form-input"
+                 placeholder="e.g. Marketing Director" />
+        </div>
+      </div>
+
+      <!-- Star Rating (shown only if enabled by space) -->
+      <div class="form-group" id="ratingGroup" style="display:none">
+        <label class="form-label">Your rating <span class="required">*</span></label>
+        <div class="star-rating" id="starRating" role="radiogroup" aria-label="Star rating">
+          <button type="button" class="star-btn" data-value="1" aria-label="1 star">
+            <i class="fa-solid fa-star"></i>
+          </button>
+          <button type="button" class="star-btn" data-value="2" aria-label="2 stars">
+            <i class="fa-solid fa-star"></i>
+          </button>
+          <button type="button" class="star-btn" data-value="3" aria-label="3 stars">
+            <i class="fa-solid fa-star"></i>
+          </button>
+          <button type="button" class="star-btn" data-value="4" aria-label="4 stars">
+            <i class="fa-solid fa-star"></i>
+          </button>
+          <button type="button" class="star-btn" data-value="5" aria-label="5 stars">
+            <i class="fa-solid fa-star"></i>
+          </button>
+        </div>
+        <input type="hidden" id="rating" name="rating" />
+        <span class="field-error" id="ratingError"></span>
+      </div>
+
+      <!-- Review text -->
+      <div class="form-group">
+        <label for="review_text" class="form-label">Your testimonial <span class="required">*</span></label>
+        <textarea id="review_text" name="review_text" class="form-textarea" rows="5"
+                  placeholder="Tell us about your experience..." required maxlength="2000"></textarea>
+        <div class="char-count">
+          <span id="charCount">0</span>/2000
+        </div>
+        <span class="field-error" id="review_textError"></span>
+      </div>
+
+      <!-- Avatar upload -->
+      <div class="form-group" id="avatarGroup">
+        <label class="form-label" id="avatarLabel">Photo <span id="avatarRequired"></span></label>
+        <div class="avatar-upload-area" id="avatarUploadArea">
+          <div class="avatar-preview" id="avatarPreview" style="display:none">
+            <img id="avatarPreviewImg" src="" alt="Avatar preview" />
+            <button type="button" class="remove-image-btn" id="removeAvatarBtn" aria-label="Remove photo">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="upload-placeholder" id="avatarPlaceholder">
+            <i class="fa-solid fa-camera"></i>
+            <p>Click to add a photo</p>
+            <span>PNG, JPG, WebP — max 5MB</span>
+          </div>
+          <input type="file" id="avatar" name="avatar" accept=".png,.jpg,.jpeg,.webp"
+                 class="file-input" aria-label="Upload photo" />
+        </div>
+        <span class="field-error" id="avatarError"></span>
+      </div>
+
+      <!-- Custom questions (rendered by JS) -->
+      <div id="customQuestionsContainer"></div>
+
+      <!-- Consent -->
+      <div class="form-group consent-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="consent" name="consent" required />
+          <span>I consent to this testimonial being displayed publicly after review.</span>
+        </label>
+        <span class="field-error" id="consentError"></span>
+      </div>
+
+      <!-- Form error -->
+      <div class="form-alert form-alert--error" id="formError" style="display:none"></div>
+
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn">
+        <span class="btn-text">Submit Testimonial</span>
+        <span class="btn-spinner spinner hidden"></span>
+      </button>
+    </form>
+
+    <!-- Thank you screen (shown after successful submission) -->
+    <div class="thank-you-screen" id="thankYouScreen" style="display:none">
+      <div class="thankyou-icon">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <h2 id="thankYouHeading">Thank You!</h2>
+      <p id="thankYouMessage">Your testimonial has been submitted.</p>
+      <p class="thankyou-note">Your submission will be reviewed before being published.</p>
+      <button type="button" class="btn btn-secondary" id="submitAnotherBtn">Submit Another</button>
+    </div>
+
+  </div>
+
+  <!-- Powered by footer -->
+  <div class="collection-footer">
+    <a href="/" class="powered-by">Powered by <strong>Vouchly</strong></a>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/collection.js') }}"></script>
+<script>initCollectionPage();</script>
+{% endblock %}

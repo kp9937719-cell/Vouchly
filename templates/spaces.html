@@ -1,0 +1,68 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}My Spaces — Vouchly{% endblock %}
+{% block page_title %}My Spaces{% endblock %}
+{% block nav_spaces %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">My Spaces</h1>
+    <p class="page-subtitle">Manage your testimonial collection spaces.</p>
+  </div>
+  <a href="/spaces/new" class="btn btn-primary">
+    <i class="fa-solid fa-plus"></i> New Space
+  </a>
+</div>
+
+<!-- Spaces Grid -->
+<div id="spacesContainer">
+  <!-- Skeleton -->
+  <div class="spaces-grid" id="skeletonGrid">
+    <div class="space-card skeleton-card">
+      <div class="skeleton skeleton-img"></div>
+      <div class="skeleton skeleton-line" style="margin-top:1rem"></div>
+      <div class="skeleton skeleton-line-short"></div>
+    </div>
+    <div class="space-card skeleton-card">
+      <div class="skeleton skeleton-img"></div>
+      <div class="skeleton skeleton-line" style="margin-top:1rem"></div>
+      <div class="skeleton skeleton-line-short"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div class="empty-state" id="emptySpaces" style="display:none">
+  <div class="empty-icon"><i class="fa-solid fa-layer-group"></i></div>
+  <h2>No spaces yet</h2>
+  <p>Create your first space to start collecting testimonials from customers.</p>
+  <a href="/spaces/new" class="btn btn-primary btn-lg">
+    <i class="fa-solid fa-plus"></i> Create Your First Space
+  </a>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="modal-backdrop" id="deleteModal" role="dialog" aria-modal="true" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">Delete Space</h3>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete <strong id="deleteSpaceName"></strong>?</p>
+      <p class="text-danger" style="margin-top:0.5rem;font-size:0.875rem">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        This will permanently delete all testimonials in this space. This action cannot be undone.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="deleteCancelBtn">Cancel</button>
+      <button class="btn btn-danger" id="deleteConfirmBtn">Delete Space</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/spaces.js') }}"></script>
+<script>initSpacesPage();</script>
+{% endblock %}

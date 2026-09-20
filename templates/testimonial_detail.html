@@ -1,0 +1,29 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Testimonial Detail — Vouchly{% endblock %}
+{% block page_title %}Testimonial Detail{% endblock %}
+{% block nav_testimonials %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/testimonials.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Testimonial Detail</h1>
+  </div>
+  <a href="/testimonials" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back</a>
+</div>
+
+<div id="testimonialDetailContainer">
+  <div class="skeleton skeleton-block" style="height:300px"></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/testimonials.js') }}"></script>
+<script>
+  const TESTIMONIAL_ID = "{{ testimonial_id | safe }}";
+  initTestimonialDetailPage(TESTIMONIAL_ID);
+</script>
+{% endblock %}

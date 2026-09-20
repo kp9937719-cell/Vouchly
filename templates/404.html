@@ -1,0 +1,16 @@
+﻿{% extends "base.html" %}
+{% block title %}Page Not Found — Vouchly{% endblock %}
+{% block body_class %}error-body{% endblock %}
+{% block body %}
+<div class="error-page">
+  <div class="error-card">
+    <div class="error-num">404</div>
+    <h1 class="error-title">Page not found</h1>
+    <p class="error-message">The page you're looking for doesn't exist or has been moved.</p>
+    <div class="error-actions">
+      <a href="/" class="btn btn-primary">Go Home</a>
+      <a href="/dashboard" class="btn btn-secondary">Dashboard</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

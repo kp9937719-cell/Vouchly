@@ -1,0 +1,145 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Testimonials — Vouchly{% endblock %}
+{% block page_title %}Testimonials{% endblock %}
+{% block nav_testimonials %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/testimonials.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Testimonials</h1>
+    <p class="page-subtitle">Review and moderate customer submissions.</p>
+  </div>
+</div>
+
+<!-- Space Selector -->
+<div class="space-selector-bar" id="spaceSelectorBar">
+  <label class="form-label" for="spaceSelect" style="white-space:nowrap">Viewing space:</label>
+  <select id="spaceSelect" class="form-select">
+    <option value="">Loading spaces...</option>
+  </select>
+</div>
+
+<!-- Tabs -->
+<div class="tab-bar" role="tablist">
+  <button class="tab-btn active" role="tab" data-status="all" aria-selected="true">
+    All <span class="tab-count" id="countAll"></span>
+  </button>
+  <button class="tab-btn" role="tab" data-status="pending">
+    Pending <span class="tab-count tab-count--warning" id="countPending"></span>
+  </button>
+  <button class="tab-btn" role="tab" data-status="approved">
+    Approved <span class="tab-count tab-count--success" id="countApproved"></span>
+  </button>
+  <button class="tab-btn" role="tab" data-status="rejected">
+    Rejected <span class="tab-count tab-count--error" id="countRejected"></span>
+  </button>
+  <button class="tab-btn" role="tab" data-status="archived">Archived</button>
+</div>
+
+<!-- Filters -->
+<div class="filters-bar">
+  <div class="search-wrapper">
+    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+    <input type="search" id="searchInput" class="form-input search-input"
+           placeholder="Search by name, company, or content..." />
+  </div>
+  <div class="filter-controls">
+    <select id="ratingFilter" class="form-select">
+      <option value="">All ratings</option>
+      <option value="5">★★★★★ 5 stars</option>
+      <option value="4">★★★★☆ 4 stars</option>
+      <option value="3">★★★☆☆ 3 stars</option>
+      <option value="2">★★☆☆☆ 2 stars</option>
+      <option value="1">★☆☆☆☆ 1 star</option>
+    </select>
+    <select id="sortSelect" class="form-select">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="rating_high">Rating: High to Low</option>
+      <option value="rating_low">Rating: Low to High</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" id="clearFiltersBtn">
+      <i class="fa-solid fa-xmark"></i> Clear
+    </button>
+  </div>
+</div>
+
+<!-- Testimonials list -->
+<div id="testimonialsContainer">
+  <div id="skeletonList" class="testimonials-list">
+    <div class="testimonial-card skeleton-card"><div class="skeleton skeleton-block" style="height:120px"></div></div>
+    <div class="testimonial-card skeleton-card"><div class="skeleton skeleton-block" style="height:120px"></div></div>
+    <div class="testimonial-card skeleton-card"><div class="skeleton skeleton-block" style="height:120px"></div></div>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="pagination-bar" id="paginationBar" style="display:none">
+  <button class="btn btn-secondary btn-sm" id="prevPageBtn" disabled>
+    <i class="fa-solid fa-chevron-left"></i> Prev
+  </button>
+  <span id="pageInfo" class="page-info"></span>
+  <button class="btn btn-secondary btn-sm" id="nextPageBtn">
+    Next <i class="fa-solid fa-chevron-right"></i>
+  </button>
+</div>
+
+<!-- Empty state -->
+<div class="empty-state" id="emptyState" style="display:none">
+  <div class="empty-icon"><i class="fa-solid fa-comment-slash"></i></div>
+  <h2 id="emptyTitle">No testimonials</h2>
+  <p id="emptyMessage">No testimonials match your current filters.</p>
+</div>
+
+<!-- Edit Testimonial Modal -->
+<div class="modal-backdrop" id="editModal" role="dialog" aria-modal="true" style="display:none">
+  <div class="modal-box modal-box--lg">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit Testimonial</h3>
+      <button class="modal-close-btn" id="editModalClose" aria-label="Close">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editTestimonialId" />
+      <div class="form-group">
+        <label class="form-label">Customer name</label>
+        <input type="text" id="editCustomerName" class="form-input" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Review text</label>
+        <textarea id="editReviewText" class="form-textarea" rows="5"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="editModalCancel">Cancel</button>
+      <button class="btn btn-primary" id="editModalSave">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-backdrop" id="deleteModal" role="dialog" aria-modal="true" style="display:none">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 class="modal-title">Delete Testimonial</h3>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to permanently delete this testimonial? This cannot be undone.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="deleteCancelBtn">Cancel</button>
+      <button class="btn btn-danger" id="deleteConfirmBtn">Delete</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/testimonials.js') }}"></script>
+<script>initTestimonialsPage();</script>
+{% endblock %}

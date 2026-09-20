@@ -1,0 +1,51 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Settings — Vouchly{% endblock %}
+{% block page_title %}Settings{% endblock %}
+{% block nav_settings %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Configure your account and preferences.</p>
+  </div>
+</div>
+
+<div class="settings-layout">
+
+  <!-- Theme Preference -->
+  <div class="settings-card">
+    <div class="settings-card-header">
+      <h2>Appearance</h2>
+    </div>
+    <div class="toggle-row">
+      <div>
+        <strong>Dark Mode</strong>
+        <p>Switch the dashboard to a dark color scheme.</p>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="darkModeToggle" />
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="settings-card settings-card--danger" style="margin-top:1.5rem">
+    <div class="settings-card-header">
+      <h2 class="text-danger">Danger Zone</h2>
+    </div>
+    <p>Logging out will clear your session on this device.</p>
+    <div class="form-actions" style="margin-top:1rem">
+      <button class="btn btn-danger" id="logoutSettingsBtn">
+        <i class="fa-solid fa-right-from-bracket"></i> Log Out
+      </button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+<script>initSettingsPage();</script>
+{% endblock %}

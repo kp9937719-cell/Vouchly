@@ -1,0 +1,233 @@
+/*
+ * collection.css — Public Testimonial Collection Form
+ * =====================================================
+ */
+
+.collection-body {
+  background: var(--ivory);
+  min-height: 100vh;
+}
+
+.collection-loading,
+.collection-error {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.collection-error .error-icon {
+  font-size: 3rem;
+  color: var(--error);
+}
+
+.collection-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-10) var(--space-4) var(--space-8);
+}
+
+.collection-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8) var(--space-8);
+  width: 100%;
+  max-width: 580px;
+  box-shadow: var(--shadow-md);
+}
+
+/* ── Header ── */
+.collection-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.collection-logo {
+  margin-bottom: var(--space-4);
+}
+
+.collection-logo img {
+  max-height: 64px;
+  max-width: 180px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.collection-heading {
+  font-family: var(--font-heading);
+  font-size: var(--text-2xl);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-3);
+}
+
+.collection-desc {
+  font-size: var(--text-base);
+  color: var(--text-secondary);
+}
+
+/* ── Star rating selector ── */
+.star-rating {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.star-btn {
+  font-size: 1.75rem;
+  color: var(--border-color);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 2px;
+  transition: color var(--transition), transform var(--transition);
+  line-height: 1;
+}
+
+.star-btn:hover,
+.star-btn.hovered,
+.star-btn.selected {
+  color: var(--gold-warm);
+}
+
+.star-btn:hover { transform: scale(1.15); }
+
+/* ── Avatar upload area ── */
+.avatar-upload-area {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color var(--transition), background var(--transition);
+  background: var(--soft-gray);
+}
+
+.avatar-upload-area:hover {
+  border-color: var(--gold);
+  background: var(--cream);
+}
+
+.avatar-upload-area .upload-placeholder {
+  padding: var(--space-3);
+}
+
+.avatar-upload-area .upload-placeholder i { font-size: 1.25rem; }
+.avatar-upload-area .upload-placeholder p { font-size: var(--text-xs); }
+.avatar-upload-area .upload-placeholder span { display: none; }
+
+.avatar-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-preview .remove-image-btn {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  font-size: 0.625rem;
+}
+
+/* ── Thank you screen ── */
+.thank-you-screen {
+  text-align: center;
+  padding: var(--space-10) var(--space-4);
+}
+
+.thankyou-icon {
+  font-size: 4rem;
+  color: var(--success);
+  margin-bottom: var(--space-5);
+}
+
+.thank-you-screen h2 {
+  font-family: var(--font-heading);
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-3);
+}
+
+.thank-you-screen p {
+  margin-bottom: var(--space-3);
+}
+
+.thankyou-note {
+  font-size: var(--text-sm);
+  color: var(--muted-text);
+  margin-bottom: var(--space-6);
+}
+
+/* ── Collection footer ── */
+.collection-footer {
+  margin-top: var(--space-6);
+  text-align: center;
+}
+
+.powered-by {
+  font-size: var(--text-xs);
+  color: var(--muted-text);
+  text-decoration: none;
+}
+.powered-by:hover { text-decoration: underline; }
+
+/* ── Custom questions ── */
+.custom-question {
+  padding: var(--space-4);
+  background: var(--soft-gray);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+}
+
+.consent-group {
+  padding: var(--space-4);
+  background: rgba(184,154,90,0.05);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(184,154,90,0.15);
+}
+
+@media (max-width: 640px) {
+  .collection-card {
+    padding: var(--space-6) var(--space-5);
+    border-radius: var(--radius-lg);
+  }
+
+
+  .form-grid-two {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Star rating error highlight */
+.star-rating.rating-error {
+  outline: 2px solid var(--error);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+}
+

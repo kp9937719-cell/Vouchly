@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+{% block title %}Vouchly — Turn Customer Love Into Your Strongest Proof{% endblock %}
+{% block body_class %}landing-body{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/showcase.css') }}" />
+{% endblock %}
+
+{% block body %}
+
+<!-- ── NAVIGATION ───────────────────────────── -->
+<header class="nav-header" id="mainNav">
+  <div class="nav-container">
+    <a href="/" class="nav-logo">
+      <img src="{{ url_for('static', filename='vouchly-logo.png') }}" alt="Vouchly" class="vouchly-logo-img" />
+    </a>
+    <nav class="nav-links" id="navLinks" aria-label="Main navigation">
+      <a href="#features" class="nav-link-item">Features</a>
+      <a href="#how-it-works" class="nav-link-item">How It Works</a>
+      <a href="#showcase" class="nav-link-item">Wall of Love</a>
+      <a href="/login" class="nav-link-item">Log In</a>
+      <a href="/signup" class="btn btn-primary btn-nav">Get Started</a>
+    </nav>
+    <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle navigation">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ── HERO ─────────────────────────────────── -->
+<section class="hero-section">
+  <div class="hero-container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <i class="fa-solid fa-star" style="color: var(--gold)"></i>
+        <span>Trusted Social Proof Platform</span>
+      </div>
+      <h1 class="hero-headline">
+        Turn customer love into your<br/>
+        <em class="headline-accent">strongest proof.</em>
+      </h1>
+      <p class="hero-subtext">
+        Collect meaningful testimonials, showcase customer experiences, and build
+        trust with beautifully designed social proof — all in one place.
+      </p>
+      <div class="hero-actions">
+        <a href="/signup" class="btn btn-primary btn-lg">
+          Get Started Free
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+        <a href="#features" class="btn btn-ghost btn-lg">
+          Explore Features
+        </a>
+      </div>
+      <p class="hero-note">No credit card required. Free to get started.</p>
+    </div>
+
+    <div class="hero-visual">
+      <!-- Decorative testimonial card preview -->
+      <div class="hero-card-stack">
+        <div class="preview-card preview-card--back">
+          <div class="preview-stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <p class="preview-text">"Working with this team changed how we approach customer feedback entirely."</p>
+          <div class="preview-author">
+            <div class="preview-avatar">M</div>
+            <div>
+              <strong>Marcus Wei</strong>
+              <span>Head of Growth · Nexus Labs</span>
+            </div>
+          </div>
+        </div>
+        <div class="preview-card preview-card--front">
+          <div class="preview-stars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <p class="preview-text">"Vouchly made collecting testimonials completely effortless. Our conversion rate improved noticeably."</p>
+          <div class="preview-author">
+            <div class="preview-avatar" style="background: var(--gold); color: var(--black)">S</div>
+            <div>
+              <strong>Sara Mitchell</strong>
+              <span>Founder · Bloom Studio</span>
+            </div>
+          </div>
+          <div class="featured-badge"><i class="fa-solid fa-star"></i> Featured</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decorative lines -->
+  <div class="hero-deco" aria-hidden="true">
+    <div class="deco-line deco-line-1"></div>
+    <div class="deco-line deco-line-2"></div>
+  </div>
+</section>
+
+<!-- ── FEATURES ──────────────────────────────── -->
+<section class="features-section" id="features">
+  <div class="section-container">
+    <div class="section-header">
+      <span class="section-label">What You Get</span>
+      <h2 class="section-title">Everything you need to build trust at scale</h2>
+      <p class="section-subtitle">A complete platform from collection to showcase — built for modern businesses.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-palette"></i>
+        </div>
+        <h3>Branded Collection Pages</h3>
+        <p>Create beautiful, custom-branded testimonial forms that match your business identity.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-paper-plane"></i>
+        </div>
+        <h3>Frictionless Submission</h3>
+        <p>Customers share feedback without creating accounts. One link, that's it.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3>Smart Moderation</h3>
+        <p>Review, approve, feature, or reject testimonials with a clean moderation inbox.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-heart"></i>
+        </div>
+        <h3>Wall of Love</h3>
+        <p>A beautiful public showcase of your best approved testimonials, ready to share.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-code"></i>
+        </div>
+        <h3>Embeddable Widgets</h3>
+        <p>Add testimonial grids, carousels, or badges to any website with a simple embed code.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fa-solid fa-chart-bar"></i>
+        </div>
+        <h3>Rating Analytics</h3>
+        <p>Understand your feedback with real rating distributions and submission trends.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ──────────────────────────── -->
+<section class="how-section" id="how-it-works">
+  <div class="section-container">
+    <div class="section-header">
+      <span class="section-label">Simple Process</span>
+      <h2 class="section-title">From collection to showcase in three steps</h2>
+    </div>
+    <div class="steps-grid">
+      <div class="step-item">
+        <div class="step-number">01</div>
+        <h3>Create your collection space</h3>
+        <p>Set up a branded testimonial form with your logo, colors, custom questions, and welcome message.</p>
+      </div>
+      <div class="step-connector" aria-hidden="true"></div>
+      <div class="step-item">
+        <div class="step-number">02</div>
+        <h3>Share your testimonial link</h3>
+        <p>Send the unique link to customers via email, social media, or after a purchase. No account needed.</p>
+      </div>
+      <div class="step-connector" aria-hidden="true"></div>
+      <div class="step-item">
+        <div class="step-number">03</div>
+        <h3>Showcase approved stories</h3>
+        <p>Review submissions, approve the best ones, and display them on your Wall of Love or website widget.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WALL OF LOVE PREVIEW ──────────────────── -->
+<section class="showcase-preview-section" id="showcase">
+  <div class="section-container">
+    <div class="section-header">
+      <span class="section-label">Testimonial Showcase</span>
+      <h2 class="section-title">Your customers have something worth sharing</h2>
+      <p class="section-subtitle">These are demonstration cards to illustrate the Wall of Love layout.</p>
+    </div>
+    <div class="masonry-preview">
+      <div class="masonry-card">
+        <div class="card-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p>"Absolutely transformed how we present customer feedback on our website. The embed widget is seamless."</p>
+        <div class="card-author">
+          <div class="author-avatar">J</div>
+          <div><strong>James Park</strong><span>Director · Orbit Agency</span></div>
+        </div>
+      </div>
+      <div class="masonry-card masonry-card--featured">
+        <div class="featured-label"><i class="fa-solid fa-star"></i> Featured</div>
+        <div class="card-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p>"We went from zero testimonials to a full Wall of Love in under a week. Our clients trust us more than ever."</p>
+        <div class="card-author">
+          <div class="author-avatar" style="background:var(--gold);color:var(--black)">L</div>
+          <div><strong>Laura Chen</strong><span>CEO · Brightpath Consulting</span></div>
+        </div>
+      </div>
+      <div class="masonry-card">
+        <div class="card-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i>
+        </div>
+        <p>"The moderation inbox is beautifully designed. I can approve testimonials in seconds from my phone."</p>
+        <div class="card-author">
+          <div class="author-avatar">R</div>
+          <div><strong>Ryan Torres</strong><span>Founder · Craft Digital</span></div>
+        </div>
+      </div>
+      <div class="masonry-card">
+        <div class="card-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p>"Setup took less than ten minutes. The branded collection page looked professional right out of the box."</p>
+        <div class="card-author">
+          <div class="author-avatar">A</div>
+          <div><strong>Anika Sharma</strong><span>Marketing Lead · Solis Brands</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FINAL CTA ──────────────────────────────── -->
+<section class="cta-section">
+  <div class="section-container">
+    <div class="cta-box">
+      <h2 class="cta-title">Your customers have something worth sharing.</h2>
+      <p class="cta-sub">Start collecting testimonials today — beautifully, effortlessly.</p>
+      <a href="/signup" class="btn btn-primary btn-lg">
+        Get Started Free <i class="fa-solid fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <img src="{{ url_for('static', filename='vouchly-logo.png') }}" alt="Vouchly" class="vouchly-logo-img vouchly-logo-img--footer" />
+      </a>
+      <p class="footer-tagline">Collect, curate, and showcase the proof your business deserves.</p>
+    </div>
+    <div class="footer-links-grid">
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="/signup">Get Started</a>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <a href="/login">Log In</a>
+        <a href="/signup">Sign Up</a>
+        <a href="/dashboard">Dashboard</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>&copy; {{ current_year }} Vouchly. All rights reserved.</p>
+  </div>
+</footer>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Sticky nav shadow on scroll
+  window.addEventListener('scroll', () => {
+    const nav = document.getElementById('mainNav');
+    nav.classList.toggle('nav-scrolled', window.scrollY > 20);
+  });
+
+  // Mobile nav toggle
+  document.getElementById('mobileNavToggle').addEventListener('click', () => {
+    document.getElementById('navLinks').classList.toggle('nav-open');
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+{% endblock %}

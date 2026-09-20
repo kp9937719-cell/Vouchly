@@ -1,0 +1,72 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Analytics — Vouchly{% endblock %}
+{% block page_title %}Analytics{% endblock %}
+{% block nav_analytics %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Analytics</h1>
+    <p class="page-subtitle">Understand your testimonial performance.</p>
+  </div>
+  <select id="analyticsSpaceSelect" class="form-select" style="width:auto">
+    <option value="">Select a space...</option>
+  </select>
+</div>
+
+<!-- Analytics content (hidden until space is selected) -->
+<div id="analyticsContent" style="display:none">
+
+  <!-- Summary cards -->
+  <div class="metrics-grid" id="analyticsMetrics"></div>
+
+  <!-- Charts row -->
+  <div class="analytics-charts">
+    <!-- Rating distribution -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Rating Distribution</h2>
+        <span class="data-note" id="avgRatingLabel"></span>
+      </div>
+      <div id="ratingDistChart" style="position:relative;height:220px">
+        <canvas id="ratingBarChart"></canvas>
+      </div>
+      <div id="noRatingDist" class="empty-state-sm" style="display:none">
+        <p>Star ratings are not enabled for this space.</p>
+      </div>
+    </div>
+
+    <!-- Submission trend -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Submission Trend</h2>
+        <select id="trendDaysSelect" class="form-select form-select--sm">
+          <option value="7">Last 7 days</option>
+          <option value="30" selected>Last 30 days</option>
+          <option value="90">Last 90 days</option>
+        </select>
+      </div>
+      <div style="position:relative;height:220px">
+        <canvas id="trendLineChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Empty state — no space selected -->
+<div class="empty-state" id="analyticsEmpty">
+  <div class="empty-icon"><i class="fa-solid fa-chart-bar"></i></div>
+  <h2>Select a space to view analytics</h2>
+  <p>Choose one of your testimonial spaces from the dropdown above.</p>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+<script>initAnalyticsPage();</script>
+{% endblock %}

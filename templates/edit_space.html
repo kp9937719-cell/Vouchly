@@ -1,0 +1,170 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Edit Space — Vouchly{% endblock %}
+{% block page_title %}Edit Space{% endblock %}
+{% block nav_spaces %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Edit Space</h1>
+    <p class="page-subtitle">Update your space settings and branding.</p>
+  </div>
+  <div class="header-actions">
+    <a href="#" class="btn btn-ghost" id="previewLink" target="_blank">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> Preview
+    </a>
+    <button class="btn btn-ghost" id="copyLinkBtn">
+      <i class="fa-solid fa-link"></i> Copy Link
+    </button>
+    <a href="/spaces" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  </div>
+</div>
+
+<!-- Loading skeleton -->
+<div id="editFormSkeleton">
+  <div class="skeleton skeleton-block" style="height:200px;margin-bottom:1.5rem"></div>
+  <div class="skeleton skeleton-block" style="height:200px"></div>
+</div>
+
+<!-- Edit form (populated by JS) -->
+<div id="editFormContainer" style="display:none">
+  <div class="form-page-layout">
+    <div class="form-main">
+      <form id="editSpaceForm" enctype="multipart/form-data" novalidate>
+        <input type="hidden" id="spaceId" value="{{ space_id }}" />
+
+        <div class="form-section">
+          <div class="form-section-header">
+            <span class="section-num">01</span>
+            <div><h2>Basic Information</h2></div>
+          </div>
+          <div class="form-body">
+            <div class="form-group">
+              <label for="name" class="form-label">Space name <span class="required">*</span></label>
+              <input type="text" id="name" name="name" class="form-input" required />
+              <span class="field-error" id="nameError"></span>
+            </div>
+            <div class="form-group">
+              <label for="slug" class="form-label">URL slug <span class="required">*</span></label>
+              <div class="slug-input-wrapper">
+                <span class="slug-prefix">/collect/</span>
+                <input type="text" id="slug" name="slug" class="form-input slug-input" required />
+              </div>
+              <span class="field-error" id="slugError"></span>
+            </div>
+            <div class="form-group">
+              <label for="business_name" class="form-label">Business name</label>
+              <input type="text" id="business_name" name="business_name" class="form-input" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-header">
+            <span class="section-num">02</span>
+            <div><h2>Branding</h2></div>
+          </div>
+          <div class="form-body">
+            <div class="form-group">
+              <label class="form-label">Business logo</label>
+              <div class="file-upload-area" id="logoUploadArea">
+                <div class="upload-preview" id="logoPreview" style="display:none">
+                  <img id="logoPreviewImg" src="" alt="Logo preview" />
+                  <button type="button" class="remove-image-btn" id="removeLogoBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+                <div class="upload-placeholder" id="logoPlaceholder">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                  <p>Click or drag to upload logo</p>
+                  <span>PNG, JPG, WebP — max 5MB</span>
+                </div>
+                <input type="file" id="logo" name="logo" accept=".png,.jpg,.jpeg,.webp" class="file-input" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="brand_color" class="form-label">Brand color</label>
+              <div class="color-picker-wrapper">
+                <input type="color" id="brand_color" name="brand_color" class="color-picker" />
+                <input type="text" id="brand_color_text" class="form-input color-text-input" maxlength="7" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-header">
+            <span class="section-num">03</span>
+            <div><h2>Collection Form Content</h2></div>
+          </div>
+          <div class="form-body">
+            <div class="form-group">
+              <label for="welcome_heading" class="form-label">Welcome heading</label>
+              <input type="text" id="welcome_heading" name="welcome_heading" class="form-input" />
+            </div>
+            <div class="form-group">
+              <label for="description" class="form-label">Description</label>
+              <textarea id="description" name="description" class="form-textarea" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="thank_you_message" class="form-label">Thank-you message</label>
+              <textarea id="thank_you_message" name="thank_you_message" class="form-textarea" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-header">
+            <span class="section-num">04</span>
+            <div><h2>Form Settings</h2></div>
+          </div>
+          <div class="form-body">
+            <div class="toggle-row">
+              <div>
+                <strong>Star Ratings</strong>
+                <p>Allow customers to give a 1–5 star rating.</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="enable_star_rating" name="enable_star_rating" />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+            <div class="toggle-row">
+              <div>
+                <strong>Space Active</strong>
+                <p>When off, the collection form will no longer accept submissions.</p>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="is_active" name="is_active" />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-alert form-alert--error" id="formError" style="display:none"></div>
+        <div class="form-alert form-alert--success" id="formSuccess" style="display:none"></div>
+
+        <div class="form-actions">
+          <a href="/spaces" class="btn btn-secondary">Cancel</a>
+          <button type="submit" class="btn btn-primary" id="saveSpaceBtn">
+            <span class="btn-text">Save Changes</span>
+            <span class="btn-spinner spinner hidden"></span>
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="form-preview">
+      <div class="preview-sticky">
+        <h3 class="preview-label">Space Info</h3>
+        <div class="space-info-panel" id="spaceInfoPanel"></div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/spaces.js') }}"></script>
+<script>initEditSpacePage();</script>
+{% endblock %}

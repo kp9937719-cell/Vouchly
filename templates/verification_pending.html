@@ -1,0 +1,119 @@
+﻿{% extends "base.html" %}
+{% block title %}Verify Your Email — Vouchly{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+{% endblock %}
+
+{% block body %}
+<div class="auth-centered">
+  <div class="auth-card auth-card--centered">
+    <div class="auth-icon-display">
+      <i class="fa-solid fa-envelope-circle-check" style="color:var(--gold)"></i>
+    </div>
+
+    <h1 class="auth-title">Verify Your Email</h1>
+    <p class="auth-subtitle">
+      Your account has been created. Please verify your email address to continue.
+    </p>
+
+    {% if email %}
+    <div style="margin: 1rem 0; padding: 0.6rem 1rem; background: var(--ivory); border-radius: var(--radius-sm); font-size: 0.9rem; font-weight: 500; color: var(--charcoal); word-break: break-all;">
+      <i class="fa-solid fa-user-check" style="margin-right: 0.4rem; color: var(--gold);"></i> {{ email }}
+    </div>
+    {% endif %}
+
+    {% if is_dev and verify_link %}
+    <div style="margin-top: 1.5rem; padding: 1.25rem; background: #FAF7F0; border: 1px dashed var(--gold); border-radius: var(--radius-md); text-align: left;">
+      <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom: 0.5rem;">
+        <span style="background: var(--gold); color: #fff; font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em;">Development Mode</span>
+      </div>
+      <p style="margin: 0 0 0.75rem 0; font-size: 0.85rem; color: var(--charcoal); line-height: 1.5;">
+        <strong>Notice:</strong> No external email service is used. Use the local development link below to complete verification:
+      </p>
+      <a href="{{ verify_link }}" id="devVerifyBtn" class="btn btn-primary btn-block" style="text-decoration:none; margin-bottom:0.75rem;">
+        <i class="fa-solid fa-shield-check"></i> Complete Verification Now
+      </a>
+      <div style="font-size:0.75rem; color:var(--text-muted); word-break: break-all;">
+        URL: <code>{{ verify_link }}</code>
+      </div>
+    </div>
+    {% endif %}
+
+    <div style="margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; width: 100%;">
+      <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Need another link?
+      </p>
+
+      <form id="resendVerificationForm" style="display:flex; flex-direction:column; gap:0.75rem;">
+        <input type="email" id="resendEmailInput" class="form-input" placeholder="Enter your email address" value="{{ email }}" required />
+        <button type="submit" class="btn btn-secondary btn-block" id="resendBtn">
+          <span>Resend Verification Link</span>
+        </button>
+      </form>
+
+      <div id="resendAlert" class="form-alert" style="display:none; margin-top:1rem;"></div>
+    </div>
+
+    <div style="margin-top: 1.5rem;">
+      <a href="/login" class="auth-link"><i class="fa-solid fa-arrow-left"></i> Return to Sign In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const resendForm = document.getElementById('resendVerificationForm');
+if (resendForm) {
+  resendForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('resendEmailInput').value.trim();
+    if (!email) return;
+
+    const btn = document.getElementById('resendBtn');
+    const alertBox = document.getElementById('resendAlert');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    alertBox.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      btn.disabled = false;
+      btn.textContent = 'Resend Verification Link';
+
+      if (data.success) {
+        alertBox.className = 'form-alert form-alert--success';
+        let html = `<strong>${data.message || 'Verification link generated.'}</strong>`;
+        if (data.data && data.data.verify_link) {
+          html += `
+            <div style="margin-top:0.75rem; padding-top:0.75rem; border-top:1px solid rgba(0,0,0,0.1);">
+              <a href="${data.data.verify_link}" class="btn btn-primary btn-sm btn-block" style="text-decoration:none;">
+                Verify Email Now
+              </a>
+            </div>
+          `;
+        }
+        alertBox.innerHTML = html;
+        alertBox.style.display = 'block';
+      } else {
+        alertBox.className = 'form-alert form-alert--error';
+        alertBox.textContent = data.message || 'Failed to generate link.';
+        alertBox.style.display = 'block';
+      }
+    } catch(err) {
+      btn.disabled = false;
+      btn.textContent = 'Resend Verification Link';
+      alertBox.className = 'form-alert form-alert--error';
+      alertBox.textContent = 'A network error occurred. Please try again.';
+      alertBox.style.display = 'block';
+    }
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Overview — Vouchly{% endblock %}
+{% block page_title %}Overview{% endblock %}
+{% block nav_overview %}active{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Good to see you, <span id="ownerGreeting">{{ current_owner.first_name if current_owner else 'there' }}</span> 👋</h1>
+    <p class="page-subtitle">Here's what's happening with your testimonials today.</p>
+  </div>
+  <a href="/spaces/new" class="btn btn-primary">
+    <i class="fa-solid fa-plus"></i> Create Space
+  </a>
+</div>
+
+<!-- Summary Metric Cards -->
+<div class="metrics-grid" id="metricsGrid">
+  <!-- Skeleton loading states -->
+  <div class="metric-card skeleton-card"><div class="skeleton skeleton-line"></div></div>
+  <div class="metric-card skeleton-card"><div class="skeleton skeleton-line"></div></div>
+  <div class="metric-card skeleton-card"><div class="skeleton skeleton-line"></div></div>
+  <div class="metric-card skeleton-card"><div class="skeleton skeleton-line"></div></div>
+  <div class="metric-card skeleton-card"><div class="skeleton skeleton-line"></div></div>
+</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions" id="quickActions" style="display:none">
+  <a href="/spaces/new" class="quick-action-card">
+    <i class="fa-solid fa-plus"></i>
+    <span>New Space</span>
+  </a>
+  <a href="/testimonials" class="quick-action-card" id="qaReview">
+    <i class="fa-solid fa-inbox"></i>
+    <span>Review Pending</span>
+  </a>
+  <a href="/analytics" class="quick-action-card">
+    <i class="fa-solid fa-chart-bar"></i>
+    <span>Analytics</span>
+  </a>
+  <a href="/embed" class="quick-action-card">
+    <i class="fa-solid fa-code"></i>
+    <span>Embed Widget</span>
+  </a>
+</div>
+
+<!-- Two-column layout: recent testimonials + activity -->
+<div class="dashboard-grid">
+  <!-- Recent Testimonials -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <h2 class="dash-card-title">Recent Testimonials</h2>
+      <a href="/testimonials" class="text-link">View all</a>
+    </div>
+    <div id="recentTestimonials">
+      <div class="skeleton-list">
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rating Distribution + Activity -->
+  <div class="dash-side">
+    <!-- Rating Chart -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Rating Distribution</h2>
+      </div>
+      <div id="ratingChartContainer" style="position:relative;height:200px">
+        <canvas id="ratingChart"></canvas>
+      </div>
+      <div id="noRatingsMsg" class="empty-state-sm" style="display:none">
+        <p>No ratings yet.</p>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="dash-card" style="margin-top:1.5rem">
+      <div class="dash-card-header">
+        <h2 class="dash-card-title">Recent Activity</h2>
+      </div>
+      <div id="recentActivity">
+        <div class="empty-state-sm"><p>No recent activity.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Empty state: no spaces yet -->
+<div class="empty-dashboard" id="emptyDashboard" style="display:none">
+  <div class="empty-icon"><i class="fa-solid fa-layer-group"></i></div>
+  <h2>Create your first collection space</h2>
+  <p>A space is a branded page where customers submit their testimonials. Create one to get started.</p>
+  <a href="/spaces/new" class="btn btn-primary btn-lg">
+    <i class="fa-solid fa-plus"></i> Create Your First Space
+  </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>initDashboard();</script>
+{% endblock %}

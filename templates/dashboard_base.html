@@ -1,0 +1,200 @@
+<!-- dashboard_base.html — Base layout for all authenticated dashboard pages -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Dashboard — Vouchly{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="dashboard-body">
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- ── SIDEBAR ─────────────────────────────── -->
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="sidebar-header">
+      <a href="/" class="sidebar-logo">
+        <img src="{{ url_for('static', filename='vouchly-logo.png') }}" alt="Vouchly" class="vouchly-logo-img" />
+      </a>
+      <button class="sidebar-close-btn" id="sidebarCloseBtn" aria-label="Close navigation">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/dashboard" class="nav-link {% block nav_overview %}{% endblock %}" data-page="dashboard">
+            <i class="fa-solid fa-chart-line nav-icon"></i>
+            <span>Overview</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/spaces" class="nav-link {% block nav_spaces %}{% endblock %}" data-page="spaces">
+            <i class="fa-solid fa-layer-group nav-icon"></i>
+            <span>My Spaces</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/testimonials" class="nav-link {% block nav_testimonials %}{% endblock %}" data-page="testimonials">
+            <i class="fa-solid fa-comment-dots nav-icon"></i>
+            <span>Testimonials</span>
+            <span class="nav-badge" id="pendingBadge" style="display:none"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link {% block nav_wall %}{% endblock %}" id="wallLink" data-page="wall">
+            <i class="fa-solid fa-heart nav-icon"></i>
+            <span>Wall of Love</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/analytics" class="nav-link {% block nav_analytics %}{% endblock %}" data-page="analytics">
+            <i class="fa-solid fa-chart-bar nav-icon"></i>
+            <span>Analytics</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/embed" class="nav-link {% block nav_embed %}{% endblock %}" data-page="embed">
+            <i class="fa-solid fa-code nav-icon"></i>
+            <span>Embed Generator</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="nav-divider"></div>
+
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/profile" class="nav-link {% block nav_profile %}{% endblock %}" data-page="profile">
+            <i class="fa-solid fa-user nav-icon"></i>
+            <span>Profile</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/settings" class="nav-link {% block nav_settings %}{% endblock %}" data-page="settings">
+            <i class="fa-solid fa-gear nav-icon"></i>
+            <span>Settings</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link nav-link-btn" id="logoutBtn">
+            <i class="fa-solid fa-right-from-bracket nav-icon"></i>
+            <span>Logout</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user" id="sidebarUser">
+        <div class="user-avatar-small" id="sidebarAvatar">{{ current_owner.initial if current_owner else '?' }}</div>
+        <div class="user-info-small">
+          <span class="user-name-small" id="sidebarName">{{ current_owner.full_name if current_owner else 'Loading...' }}</span>
+          <span class="user-email-small" id="sidebarEmail">{{ current_owner.email if current_owner else '' }}</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ───────────────────────── -->
+  <div class="dashboard-main">
+
+    <!-- Top Navigation Bar -->
+    <header class="topbar" role="banner">
+      <div class="topbar-left">
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <div class="breadcrumb">
+          <span class="breadcrumb-home">Vouchly</span>
+          <i class="fa-solid fa-chevron-right breadcrumb-sep"></i>
+          <span class="breadcrumb-current">{% block page_title %}Dashboard{% endblock %}</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <!-- Theme Toggle -->
+        <button class="icon-btn" id="themeToggle" aria-label="Toggle theme" title="Toggle dark mode">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+
+        <!-- Notifications -->
+        <div class="notification-wrapper">
+          <button class="icon-btn" id="notifBtn" aria-label="Notifications">
+            <i class="fa-solid fa-bell"></i>
+            <span class="notif-dot" id="notifDot" style="display:none"></span>
+          </button>
+          <div class="notif-dropdown" id="notifDropdown" role="dialog" aria-label="Notifications">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <button class="text-btn" id="markAllRead">Mark all read</button>
+            </div>
+            <div class="notif-list" id="notifList">
+              <div class="notif-empty">No notifications yet.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Dropdown -->
+        <div class="profile-wrapper">
+          <button class="profile-btn" id="profileBtn" aria-label="Profile menu">
+            <div class="user-avatar-small" id="topbarAvatar">{{ current_owner.initial if current_owner else '?' }}</div>
+            <span id="topbarName" class="topbar-name">{{ current_owner.first_name if current_owner else 'Account' }}</span>
+            <i class="fa-solid fa-chevron-down topbar-chevron"></i>
+          </button>
+          <div class="profile-dropdown" id="profileDropdown">
+            <a href="/profile" class="dropdown-item">
+              <i class="fa-solid fa-user"></i> Profile
+            </a>
+            <a href="/settings" class="dropdown-item">
+              <i class="fa-solid fa-gear"></i> Settings
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item dropdown-item-danger" id="logoutBtn2">
+              <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="dashboard-content" id="dashContent">
+      {% block content %}{% endblock %}
+    </main>
+
+  </div><!-- /.dashboard-main -->
+
+  <!-- Toast Container -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-backdrop" id="confirmModal" role="dialog" aria-modal="true" style="display:none">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title" id="confirmTitle">Confirm Action</h3>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage">Are you sure you want to do this?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+        <button class="btn btn-danger" id="confirmOk">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,117 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Profile — Vouchly{% endblock %}
+{% block page_title %}Profile{% endblock %}
+{% block nav_profile %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Your Profile</h1>
+    <p class="page-subtitle">Manage your personal and business information.</p>
+  </div>
+</div>
+
+<div class="settings-layout">
+
+  <!-- Profile Info -->
+  <div class="settings-card">
+    <div class="settings-card-header">
+      <h2>Personal Information</h2>
+    </div>
+
+    <!-- Avatar -->
+    <div class="profile-avatar-section">
+      <div class="profile-avatar-large" id="profileAvatarLarge">?</div>
+      <div>
+        <p class="profile-avatar-name" id="profileName">Loading...</p>
+        <p class="profile-avatar-email" id="profileEmail"></p>
+      </div>
+    </div>
+
+    <form id="profileForm" enctype="multipart/form-data" novalidate>
+      <div class="form-group">
+        <label for="full_name" class="form-label">Full name</label>
+        <input type="text" id="full_name" name="full_name" class="form-input" />
+        <span class="field-error" id="full_nameError"></span>
+      </div>
+      <div class="form-group">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email" id="email" name="email" class="form-input" disabled />
+        <span class="field-hint">Email cannot be changed at this time.</span>
+      </div>
+      <div class="form-group">
+        <label for="business_name" class="form-label">Business name</label>
+        <input type="text" id="business_name" name="business_name" class="form-input"
+               placeholder="Your company or brand name" />
+      </div>
+      <div class="form-group">
+        <label for="brand_color" class="form-label">Default brand color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="brand_color" name="brand_color" class="color-picker" value="#B89A5A" />
+          <input type="text" id="brand_color_text" class="form-input color-text-input" value="#B89A5A" maxlength="7" />
+        </div>
+      </div>
+
+      <div class="form-alert form-alert--success" id="profileSuccess" style="display:none"></div>
+      <div class="form-alert form-alert--error" id="profileError" style="display:none"></div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+          <span class="btn-text">Save Changes</span>
+          <span class="btn-spinner spinner hidden"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Change Password -->
+  <div class="settings-card" style="margin-top:1.5rem">
+    <div class="settings-card-header">
+      <h2>Change Password</h2>
+    </div>
+    <form id="passwordForm" novalidate>
+      <div class="form-group">
+        <label for="current_password" class="form-label">Current password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" id="current_password" name="current_password" class="form-input" />
+        </div>
+        <span class="field-error" id="current_passwordError"></span>
+      </div>
+      <div class="form-group">
+        <label for="new_password" class="form-label">New password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" id="new_password" name="new_password" class="form-input"
+                 placeholder="At least 8 characters" />
+        </div>
+        <span class="field-error" id="new_passwordError"></span>
+      </div>
+      <div class="form-group">
+        <label for="confirm_password" class="form-label">Confirm new password</label>
+        <div class="input-wrapper">
+          <i class="fa-solid fa-lock input-icon"></i>
+          <input type="password" id="confirm_password" name="confirm_password" class="form-input" />
+        </div>
+        <span class="field-error" id="confirm_passwordError"></span>
+      </div>
+
+      <div class="form-alert form-alert--success" id="pwdSuccess" style="display:none"></div>
+      <div class="form-alert form-alert--error" id="pwdError" style="display:none"></div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="changePasswordBtn">
+          <span class="btn-text">Update Password</span>
+          <span class="btn-spinner spinner hidden"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+<script>initProfilePage();</script>
+{% endblock %}

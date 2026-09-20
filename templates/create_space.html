@@ -1,0 +1,215 @@
+﻿{% extends "dashboard_base.html" %}
+{% block title %}Create Space — Vouchly{% endblock %}
+{% block page_title %}Create Space{% endblock %}
+{% block nav_spaces %}active{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Create a New Space</h1>
+    <p class="page-subtitle">Set up a branded testimonial collection page for your business.</p>
+  </div>
+  <a href="/spaces" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Back to Spaces</a>
+</div>
+
+<div class="form-page-layout">
+  <!-- Form -->
+  <div class="form-main">
+    <form id="createSpaceForm" enctype="multipart/form-data" novalidate>
+
+      <!-- Section 1: Basic Info -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">01</span>
+          <div>
+            <h2>Basic Information</h2>
+            <p>Give your space a name and a unique URL.</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-group">
+            <label for="name" class="form-label">Space name <span class="required">*</span></label>
+            <input type="text" id="name" name="name" class="form-input" placeholder="e.g. Acme Corp Testimonials" required />
+            <span class="field-error" id="nameError"></span>
+          </div>
+          <div class="form-group">
+            <label for="slug" class="form-label">Public URL slug <span class="required">*</span></label>
+            <div class="slug-input-wrapper">
+              <span class="slug-prefix">/collect/</span>
+              <input type="text" id="slug" name="slug" class="form-input slug-input"
+                     placeholder="acme-corp" pattern="[a-z0-9\-]+" required />
+            </div>
+            <span class="field-hint">Lowercase letters, numbers, and hyphens only. 3–60 characters.</span>
+            <span class="field-error" id="slugError"></span>
+          </div>
+          <div class="form-group">
+            <label for="business_name" class="form-label">Business name</label>
+            <input type="text" id="business_name" name="business_name" class="form-input" placeholder="Acme Corp" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 2: Branding -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">02</span>
+          <div>
+            <h2>Branding</h2>
+            <p>Customize how your collection page looks.</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-group">
+            <label class="form-label">Business logo</label>
+            <div class="file-upload-area" id="logoUploadArea">
+              <div class="upload-preview" id="logoPreview" style="display:none">
+                <img id="logoPreviewImg" src="" alt="Logo preview" />
+                <button type="button" class="remove-image-btn" id="removeLogoBtn" aria-label="Remove logo">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="upload-placeholder" id="logoPlaceholder">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <p>Click or drag to upload logo</p>
+                <span>PNG, JPG, WebP — max 5MB</span>
+              </div>
+              <input type="file" id="logo" name="logo" accept=".png,.jpg,.jpeg,.webp"
+                     class="file-input" aria-label="Upload logo" />
+            </div>
+            <span class="field-error" id="logoError"></span>
+          </div>
+          <div class="form-group">
+            <label for="brand_color" class="form-label">Brand color</label>
+            <div class="color-picker-wrapper">
+              <input type="color" id="brand_color" name="brand_color" class="color-picker" value="#B89A5A" />
+              <input type="text" id="brand_color_text" class="form-input color-text-input"
+                     value="#B89A5A" placeholder="#B89A5A" maxlength="7" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Form Content -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">03</span>
+          <div>
+            <h2>Collection Form Content</h2>
+            <p>What customers will see on your testimonial form.</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="form-group">
+            <label for="welcome_heading" class="form-label">Welcome heading</label>
+            <input type="text" id="welcome_heading" name="welcome_heading" class="form-input"
+                   placeholder="Share your experience with us!" />
+          </div>
+          <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-textarea" rows="2"
+                      placeholder="We'd love to hear your feedback."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="thank_you_message" class="form-label">Thank-you message</label>
+            <textarea id="thank_you_message" name="thank_you_message" class="form-textarea" rows="2"
+                      placeholder="Thank you for your testimonial!"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Form Settings -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">04</span>
+          <div>
+            <h2>Form Settings</h2>
+            <p>Configure what the submission form collects.</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div class="toggle-row">
+            <div>
+              <strong>Star Ratings</strong>
+              <p>Allow customers to give a 1–5 star rating.</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="enable_star_rating" name="enable_star_rating" checked />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+          <div class="toggle-row">
+            <div>
+              <strong>Require Avatar Photo</strong>
+              <p>Make avatar upload mandatory for all submissions.</p>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="require_avatar" name="require_avatar" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 5: Custom Questions -->
+      <div class="form-section">
+        <div class="form-section-header">
+          <span class="section-num">05</span>
+          <div>
+            <h2>Custom Questions</h2>
+            <p>Add extra questions for your customers to answer.</p>
+          </div>
+        </div>
+        <div class="form-body">
+          <div id="questionsContainer"></div>
+          <button type="button" class="btn btn-ghost" id="addQuestionBtn">
+            <i class="fa-solid fa-plus"></i> Add Question
+          </button>
+        </div>
+      </div>
+
+      <div class="form-alert form-alert--error" id="formError" style="display:none"></div>
+
+      <div class="form-actions">
+        <a href="/spaces" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" id="createSpaceBtn">
+          <span class="btn-text">Create Space</span>
+          <span class="btn-spinner spinner hidden"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Live Preview Panel -->
+  <div class="form-preview">
+    <div class="preview-sticky">
+      <h3 class="preview-label">Live Preview</h3>
+      <div class="collection-preview" id="livePreview">
+        <div class="preview-header">
+          <div class="preview-logo-area" id="previewLogoArea">
+            <div class="preview-logo-placeholder" id="previewLogoPlaceholder">P</div>
+            <img id="previewLogoImg" src="" alt="Logo" style="display:none" />
+          </div>
+          <h2 id="previewHeading">Share your experience with us!</h2>
+          <p id="previewDesc">We'd love to hear your feedback.</p>
+        </div>
+        <div class="preview-form-mock">
+          <div class="mock-field"></div>
+          <div class="mock-field"></div>
+          <div class="mock-stars" id="previewStars">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <div class="mock-textarea"></div>
+          <div class="mock-btn" id="previewBtn">Submit Testimonial</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/spaces.js') }}"></script>
+<script>initCreateSpacePage();</script>
+{% endblock %}

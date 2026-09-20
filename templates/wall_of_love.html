@@ -1,0 +1,165 @@
+﻿{% extends "base.html" %}
+{% block title %}Wall of Love — Vouchly{% endblock %}
+{% block body_class %}wall-body{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/showcase.css') }}" />
+{% endblock %}
+
+{% block body %}
+
+<!-- Loading -->
+<div class="wall-loading" id="wallLoading">
+  <div class="loader-spinner"></div>
+</div>
+
+<!-- Error state -->
+<div class="wall-error" id="wallError" style="display:none">
+  <div class="error-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+  <h2 id="wallErrorTitle">Not Found</h2>
+  <p id="wallErrorMessage">This Wall of Love is not available.</p>
+  <a href="/" class="btn btn-secondary" style="margin-top:1.5rem">Go to Vouchly</a>
+</div>
+
+<!-- Wall content -->
+<div class="wall-wrapper" id="wallWrapper" style="display:none">
+
+  <!-- Header -->
+  <header class="wall-header">
+    <div class="wall-header-inner">
+      <div class="wall-logo-area" id="wallLogoArea"></div>
+      <div class="wall-title-area">
+        <h1 class="wall-title">Wall of Love</h1>
+        <p class="wall-subtitle" id="wallSubtitle">Testimonials from our customers</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- Testimonials masonry grid -->
+  <main class="wall-main">
+    <div class="masonry-grid" id="masonryGrid">
+      <!-- Cards rendered by JS -->
+    </div>
+
+    <!-- Empty state -->
+    <div class="wall-empty" id="wallEmpty" style="display:none">
+      <i class="fa-solid fa-heart wall-empty-icon"></i>
+      <h2>No testimonials yet</h2>
+      <p>Approved testimonials will appear here.</p>
+    </div>
+
+    <!-- Load more -->
+    <div class="wall-load-more" id="wallLoadMore" style="display:none">
+      <button class="btn btn-secondary" id="loadMoreBtn">Load More</button>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="wall-footer">
+    <a href="/" class="powered-by">Powered by <strong>Vouchly</strong></a>
+  </footer>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const SLUG = "{{ slug | safe }}";
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+
+async function loadWall(page = 1, append = false) {
+  try {
+    const res = await fetch(`/api/public/wall/${SLUG}?page=${page}&per_page=12`);
+    const data = await res.json();
+
+    document.getElementById('wallLoading').style.display = 'none';
+
+    if (!data.success) {
+      document.getElementById('wallError').style.display = 'flex';
+      document.getElementById('wallErrorTitle').textContent = 'Not Available';
+      document.getElementById('wallErrorMessage').textContent = data.message;
+      return;
+    }
+
+    const { space, testimonials, pagination } = data.data;
+    document.getElementById('wallWrapper').style.display = 'block';
+
+    // Update header
+    if (space.logo) {
+      document.getElementById('wallLogoArea').innerHTML =
+        `<img src="/${space.logo}" alt="${escapeHtml(space.business_name || space.name)}" class="wall-logo" />`;
+    }
+    document.getElementById('wallSubtitle').textContent =
+      `Testimonials from customers of ${space.business_name || space.name}`;
+    document.title = `Wall of Love — ${space.business_name || space.name}`;
+
+    // Apply brand color as CSS var
+    document.documentElement.style.setProperty('--space-color', space.brand_color || '#B89A5A');
+
+    const grid = document.getElementById('masonryGrid');
+    if (!append) grid.innerHTML = '';
+
+    if (testimonials.length === 0 && !append) {
+      document.getElementById('wallEmpty').style.display = 'block';
+      return;
+    }
+
+    testimonials.forEach(t => {
+      const stars = t.rating && space.enable_star_rating
+        ? Array.from({length: 5}, (_, i) =>
+            `<i class="fa-${i < t.rating ? 'solid' : 'regular'} fa-star"></i>`
+          ).join('')
+        : '';
+
+      const avatar = t.avatar
+        ? `<img src="/${t.avatar}" alt="${escapeHtml(t.customer_name)}" class="wall-avatar" />`
+        : `<div class="wall-avatar-placeholder">${escapeHtml(t.customer_name.charAt(0).toUpperCase())}</div>`;
+
+      const featured = t.is_featured
+        ? `<div class="wall-featured-badge"><i class="fa-solid fa-star"></i> Featured</div>` : '';
+
+      const card = document.createElement('div');
+      card.className = 'wall-card' + (t.is_featured ? ' wall-card--featured' : '');
+      card.innerHTML = `
+        ${featured}
+        ${stars ? `<div class="wall-stars">${stars}</div>` : ''}
+        <p class="wall-review">${escapeHtml(t.review_text)}</p>
+        <div class="wall-author">
+          ${avatar}
+          <div class="wall-author-info">
+            <strong>${escapeHtml(t.customer_name)}</strong>
+            ${t.company_name || t.company_role
+              ? `<span>${escapeHtml([t.company_role, t.company_name].filter(Boolean).join(' · '))}</span>`
+              : ''}
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    // Load more button
+    const loadMoreEl = document.getElementById('wallLoadMore');
+    if (pagination.has_next) {
+      loadMoreEl.style.display = 'flex';
+      document.getElementById('loadMoreBtn').onclick = () => loadWall(pagination.page + 1, true);
+    } else {
+      loadMoreEl.style.display = 'none';
+    }
+
+  } catch (err) {
+    document.getElementById('wallLoading').style.display = 'none';
+    document.getElementById('wallError').style.display = 'flex';
+  }
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+loadWall();
+</script>
+{% endblock %}

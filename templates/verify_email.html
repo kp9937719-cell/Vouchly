@@ -1,0 +1,182 @@
+﻿{% extends "base.html" %}
+{% block title %}Verify Email — Vouchly{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+{% endblock %}
+
+{% block body %}
+<div class="auth-centered">
+  <div class="auth-card auth-card--centered">
+    <div class="auth-icon-display" id="verifyIcon" style="margin-bottom:1.25rem;">
+      {% if token %}
+        <i class="fa-solid fa-spinner fa-spin" style="color:var(--gold);font-size:2.5rem;"></i>
+      {% else %}
+        <i class="fa-solid fa-envelope-open-text" style="color:var(--gold);font-size:2.5rem;"></i>
+      {% endif %}
+    </div>
+
+    <h1 class="auth-title" id="verifyTitle">
+      {% if token %}Verifying Your Email...{% else %}Verify Your Email{% endif %}
+    </h1>
+
+    <p class="auth-subtitle" id="verifyMessage">
+      {% if token %}
+        Please wait while we confirm your email verification link...
+      {% else %}
+        No verification token was provided. Enter your email below to request a verification link.
+      {% endif %}
+    </p>
+
+    <div id="verifyResult" style="width:100%;"></div>
+
+    <div id="resendContainer" style="{% if token %}display:none;{% endif %}margin-top:1.5rem;width:100%;border-top:1px solid var(--border-color);padding-top:1.25rem;">
+      <p style="font-size:0.875rem;color:var(--text-muted);text-align:center;margin-bottom:0.75rem;">
+        Need a new verification link?
+      </p>
+      <form id="resendForm" class="auth-form" style="gap:0.75rem;">
+        <div class="form-group" style="margin-bottom:0;">
+          <input type="email" id="resendEmail" class="form-input" placeholder="Enter your email address" required />
+        </div>
+        <button type="submit" class="btn btn-secondary btn-block" id="resendSubmitBtn">
+          <span>Resend Verification Link</span>
+        </button>
+      </form>
+      <div id="resendAlert" class="form-alert" style="display:none;margin-top:0.75rem;"></div>
+    </div>
+
+    <div style="margin-top:1.5rem;text-align:center;">
+      <a href="/login" class="auth-link"><i class="fa-solid fa-arrow-left"></i> Back to Sign In</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let token = "{{ token or '' }}";
+if (!token) {
+  const urlParams = new URLSearchParams(window.location.search);
+  token = urlParams.get('token') || '';
+  if (!token) {
+    const segments = window.location.pathname.split('/').filter(Boolean);
+    if (segments.length >= 2 && segments[0] === 'verify-email') {
+      token = segments[1];
+    }
+  }
+}
+
+async function verifyToken() {
+  if (!token) {
+    document.getElementById('resendContainer').style.display = 'block';
+    return;
+  }
+
+  const icon = document.getElementById('verifyIcon');
+  const title = document.getElementById('verifyTitle');
+  const msg = document.getElementById('verifyMessage');
+  const resultDiv = document.getElementById('verifyResult');
+  const resendContainer = document.getElementById('resendContainer');
+
+  try {
+    const res = await fetch('/api/auth/verify-email', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ token })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      if (data.data && data.data.already_verified) {
+        icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--gold);font-size:2.5rem;"></i>';
+        title.textContent = 'Already Verified';
+        msg.textContent = data.message || 'Your email address is already verified.';
+      } else {
+        icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--success);font-size:2.5rem;"></i>';
+        title.textContent = 'Email Verified!';
+        msg.textContent = data.message || 'Your email has been verified successfully!';
+      }
+      resultDiv.innerHTML = `
+        <a href="/login" class="btn btn-primary btn-block" style="margin-top:1.5rem;text-decoration:none;">
+          <i class="fa-solid fa-arrow-right-to-bracket"></i> Continue to Sign In
+        </a>
+      `;
+      resendContainer.style.display = 'none';
+    } else {
+      const isExpired = res.status === 400 && (data.message || '').toLowerCase().includes('expired');
+      if (isExpired) {
+        icon.innerHTML = '<i class="fa-solid fa-clock-rotate-left" style="color:var(--warning);font-size:2.5rem;"></i>';
+        title.textContent = 'Verification Link Expired';
+        msg.textContent = 'This verification link has expired. Links are valid for 1 hour for security. Request a new link below:';
+      } else {
+        icon.innerHTML = '<i class="fa-solid fa-circle-xmark" style="color:var(--error);font-size:2.5rem;"></i>';
+        title.textContent = 'Verification Failed';
+        msg.textContent = data.message || 'The verification link is invalid or has already been used.';
+      }
+
+      resultDiv.innerHTML = '';
+      resendContainer.style.display = 'block';
+    }
+  } catch(e) {
+    icon.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color:var(--error);font-size:2.5rem;"></i>';
+    title.textContent = 'Verification Error';
+    msg.textContent = 'A connection error occurred while verifying your email. Please try again.';
+    resendContainer.style.display = 'block';
+  }
+}
+
+verifyToken();
+
+const resendForm = document.getElementById('resendForm');
+if (resendForm) {
+  resendForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('resendEmail').value.trim();
+    if (!email) return;
+
+    const btn = document.getElementById('resendSubmitBtn');
+    const alertBox = document.getElementById('resendAlert');
+    btn.disabled = true;
+    btn.querySelector('span').textContent = 'Generating...';
+    alertBox.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Resend Verification Link';
+
+      if (data.success) {
+        alertBox.className = 'form-alert form-alert--success';
+        let html = `<strong>${data.message || 'Verification link generated.'}</strong>`;
+        if (data.data && data.data.verify_link) {
+          html += `
+            <div style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid rgba(0,0,0,0.1);">
+              <a href="${data.data.verify_link}" class="btn btn-primary btn-sm btn-block" style="text-decoration:none;">
+                Complete Verification Now
+              </a>
+            </div>
+          `;
+        }
+        alertBox.innerHTML = html;
+        alertBox.style.display = 'block';
+      } else {
+        alertBox.className = 'form-alert form-alert--error';
+        alertBox.textContent = data.message || 'Failed to generate link.';
+        alertBox.style.display = 'block';
+      }
+    } catch(err) {
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Resend Verification Link';
+      alertBox.className = 'form-alert form-alert--error';
+      alertBox.textContent = 'A network error occurred. Please try again.';
+      alertBox.style.display = 'block';
+    }
+  });
+}
+</script>
+{% endblock %}

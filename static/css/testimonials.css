@@ -1,0 +1,316 @@
+/*
+ * testimonials.css — Moderation Inbox Styles
+ * =============================================
+ */
+
+/* ── Tabs ── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: var(--space-6);
+  overflow-x: auto;
+}
+
+.tab-btn {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-sm);
+  font-weight: var(--fw-medium);
+  color: var(--text-secondary);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: color var(--transition), border-color var(--transition);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tab-btn:hover { color: var(--text); }
+
+.tab-btn.active {
+  color: var(--text);
+  border-bottom-color: var(--gold);
+  font-weight: var(--fw-semibold);
+}
+
+.tab-count {
+  background: var(--soft-gray);
+  color: var(--muted-text);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  padding: 1px 6px;
+  font-weight: var(--fw-medium);
+}
+
+.tab-count--warning { background: var(--warning-bg); color: var(--warning); }
+.tab-count--success { background: var(--success-bg); color: var(--success); }
+.tab-count--error   { background: var(--error-bg);   color: var(--error); }
+
+/* ── Filters bar ── */
+.filters-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  flex-wrap: wrap;
+}
+
+.search-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-text);
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+.search-input {
+  padding-left: 2.5rem;
+}
+
+.filter-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ── Testimonials list ── */
+.testimonials-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Testimonial card ── */
+.testimonial-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition);
+}
+
+.testimonial-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.testimonial-card--featured {
+  border-color: rgba(184,154,90,0.3);
+  background: rgba(184,154,90,0.02);
+}
+
+.testimonial-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+/* ── Customer avatar ── */
+.t-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.t-avatar-placeholder {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--gold-pale);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-bold);
+  font-size: 1.0625rem;
+  flex-shrink: 0;
+}
+
+.t-info { flex: 1; min-width: 0; }
+
+.t-name {
+  font-size: var(--text-md);
+  font-weight: var(--fw-semibold);
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.t-meta {
+  font-size: var(--text-xs);
+  color: var(--muted-text);
+}
+
+.t-email {
+  font-size: var(--text-xs);
+  color: var(--muted-text);
+  font-family: var(--font-mono);
+  margin-top: 2px;
+}
+
+.t-header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.t-date {
+  font-size: var(--text-xs);
+  color: var(--muted-text);
+}
+
+.t-indicators {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.t-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--text-xs);
+  color: var(--muted-text);
+}
+
+.t-indicator.liked { color: var(--error); }
+.t-indicator.featured { color: var(--gold); }
+
+/* ── Star rating ── */
+.t-stars {
+  color: var(--gold-warm);
+  font-size: 0.875rem;
+  display: flex;
+  gap: 2px;
+  margin-bottom: var(--space-3);
+}
+
+/* ── Review text ── */
+.t-review {
+  font-size: var(--text-sm);
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: var(--space-4);
+}
+
+/* ── Card actions ── */
+.t-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+.t-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.3125rem 0.625rem;
+  border-radius: var(--radius-md);
+  font-size: var(--text-xs);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  border: 1px solid var(--border-color);
+  background: var(--surface);
+  color: var(--text-secondary);
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+  white-space: nowrap;
+}
+
+.t-action-btn:hover {
+  background: var(--soft-gray);
+  color: var(--text);
+}
+
+.t-action-btn.approve-btn:hover  { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+.t-action-btn.reject-btn:hover   { background: var(--error-bg);   color: var(--error);   border-color: var(--error); }
+.t-action-btn.feature-btn.active { background: rgba(184,154,90,0.1); color: var(--gold); border-color: rgba(184,154,90,0.3); }
+.t-action-btn.like-btn.active    { background: rgba(185,74,72,0.08); color: var(--error); border-color: rgba(185,74,72,0.2); }
+
+.t-actions-spacer { flex: 1; }
+
+/* ── Space selector ── */
+.space-selector-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-6);
+  margin-bottom: var(--space-6);
+}
+
+/* ── Testimonial detail ── */
+.testimonial-detail-card {
+  background: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  max-width: 760px;
+  box-shadow: var(--shadow-md);
+}
+
+.detail-header {
+  padding: var(--space-8);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+
+.detail-avatar-lg {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.detail-avatar-placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--gold-pale);
+  color: var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: var(--fw-bold);
+  font-size: 1.75rem;
+  flex-shrink: 0;
+}
+
+.detail-review {
+  padding: var(--space-8);
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  color: var(--text);
+  border-bottom: 1px solid var(--border-color);
+  font-style: italic;
+  font-family: var(--font-heading);
+}
+
+.detail-actions {
+  padding: var(--space-6) var(--space-8);
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
