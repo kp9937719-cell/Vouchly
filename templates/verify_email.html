@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}Verify Email — Vouchly{% endblock %}
 {% block body_class %}auth-body{% endblock %}
 {% block extra_css %}
@@ -95,9 +95,12 @@ async function verifyToken() {
         icon.innerHTML = '<i class="fa-solid fa-circle-check" style="color:var(--success);font-size:2.5rem;"></i>';
         title.textContent = 'Email Verified!';
         msg.textContent = data.message || 'Your email has been verified successfully!';
+        if (window.showToast) {
+          showToast('Email verified successfully! You can now sign in.', 'success', 'Verified');
+        }
       }
       resultDiv.innerHTML = `
-        <a href="/login" class="btn btn-primary btn-block" style="margin-top:1.5rem;text-decoration:none;">
+        <a href="/login" class="btn btn-primary btn-block" style="margin-top:1.5rem;text-decoration:none;" onclick="if(window.setFlashToast) setFlashToast('Email verified! Please sign in below.', 'success', 'Verified');">
           <i class="fa-solid fa-arrow-right-to-bracket"></i> Continue to Sign In
         </a>
       `;

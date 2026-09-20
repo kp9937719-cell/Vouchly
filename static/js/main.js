@@ -1,4 +1,4 @@
-﻿/**
+/**
  * main.js — Global JavaScript Utilities
  * =======================================
  * This file loads on every page and provides:
@@ -27,8 +27,13 @@
  * @param {number} [duration]- Auto-dismiss in ms (default: 4000)
  */
 function showToast(message, type = 'info', title = '', duration = 4000) {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    container.setAttribute('aria-live', 'polite');
+    document.body.appendChild(container);
+  }
 
   const icons = {
     success: 'fa-circle-check',
@@ -79,7 +84,14 @@ function showToast(message, type = 'info', title = '', duration = 4000) {
   if (duration > 0) setTimeout(dismiss, duration);
 }
 
+function setFlashToast(message, type = 'success', title = '', duration = 4000) {
+  try {
+    sessionStorage.setItem('vouchly_toast', JSON.stringify({ message, type, title, duration }));
+  } catch (_) {}
+}
+
 window.showToast = showToast;
+window.setFlashToast = setFlashToast;
 
 
 // ─────────────────────────────────────────────
@@ -283,21 +295,28 @@ async function apiFetch(url, options = {}) {
 
   let response = await fetch(url, config);
 
-  // Try token refresh on 401
-  if (response.status === 401 && !options._retried) {
+  const isAuthPage = ['/login', '/signup', '/forgot-password', '/reset-password', '/verification-pending', '/verify-email'].some(p => window.location.pathname.startsWith(p));
+  const isAuthCheck = url.includes('/api/auth/me') || url.includes('/api/auth/login') || url.includes('/api/auth/signup');
+
+  // Try token refresh on 401 (only for authenticated dashboard pages)
+  if (response.status === 401 && !isAuthPage && !isAuthCheck && !options._retried) {
     try {
-      await fetch('/api/auth/refresh', { method: 'POST', credentials: 'same-origin' });
-      config._retried = true;
-      response = await fetch(url, config);
+      const refreshRes = await fetch('/api/auth/refresh', { method: 'POST', credentials: 'same-origin' });
+      if (refreshRes.ok) {
+        config._retried = true;
+        response = await fetch(url, config);
+      } else {
+        window.location.href = '/login';
+        return { data: null, ok: false, status: 401 };
+      }
     } catch (_) {
-      // Refresh failed — redirect to login
       window.location.href = '/login';
       return { data: null, ok: false, status: 401 };
     }
   }
 
-  // Still 401 after refresh? Send to login.
-  if (response.status === 401) {
+  // Still 401 on protected page after refresh attempt? Send to login.
+  if (response.status === 401 && !isAuthPage && !isAuthCheck) {
     window.location.href = '/login';
     return { data: null, ok: false, status: 401 };
   }
@@ -432,6 +451,9 @@ function initDashboardShell() {
 
 
 async function handleLogout() {
+  if (window.setFlashToast) {
+    window.setFlashToast('You have been logged out successfully.', 'info', 'Signed Out');
+  }
   try {
     await apiFetch('/api/auth/logout', { method: 'POST' });
   } catch (_) {}
@@ -657,5 +679,19 @@ document.addEventListener('DOMContentLoaded', () => {
     link.rel = 'stylesheet';
     link.href = '/static/css/responsive.css';
     document.head.appendChild(link);
+  }
+
+  // Check for any flash toast passed across page navigations
+  try {
+    const pendingToast = sessionStorage.getItem('vouchly_toast');
+    if (pendingToast) {
+      const { message, type, title, duration } = JSON.parse(pendingToast);
+      sessionStorage.removeItem('vouchly_toast');
+      setTimeout(() => {
+        showToast(message, type || 'success', title || '', duration || 4000);
+      }, 200);
+    }
+  } catch (_) {
+    sessionStorage.removeItem('vouchly_toast');
   }
 });

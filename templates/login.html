@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Log In — Vouchly{% endblock %}
+{% block body_class %}auth-body{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+{% endblock %}
+
+{% block body %}
+<div class="auth-layout">
+  <!-- Left panel — branding -->
+  <div class="auth-panel auth-panel--left" aria-hidden="true">
+    <div class="auth-brand">
+      <a href="/" class="auth-logo">
+        <img src="{{ url_for('static', filename='vouchly-logo.png') }}" alt="Vouchly" class="vouchly-logo-img" />
+      </a>
+      <h2 class="auth-brand-headline">Welcome back to your proof hub.</h2>
+      <p class="auth-brand-sub">Manage testimonials, showcase your reputation, and grow trust — all in one place.</p>
+    </div>
+    <div class="auth-testimonial-preview">
+      <div class="auth-preview-card">
+        <div class="preview-stars">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        </div>
+        <p>"Vouchly made our testimonial process completely seamless."</p>
+        <span>— A happy customer</span>
+      </div>
+    </div>
+    <div class="auth-deco" aria-hidden="true">
+      <div class="deco-circle deco-circle-1"></div>
+      <div class="deco-circle deco-circle-2"></div>
+    </div>
+  </div>
+
+  <!-- Right panel — form -->
+  <div class="auth-panel auth-panel--right">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <a href="/" class="auth-mobile-logo">
+          <img src="{{ url_for('static', filename='vouchly-logo.png') }}" alt="Vouchly" class="vouchly-logo-img vouchly-logo-img--sm" />
+        </a>
+        <h1 class="auth-title">Sign in to your account</h1>
+        <p class="auth-subtitle">Don't have an account? <a href="/signup" class="auth-link">Create one free</a></p>
+      </div>
+
+      <form id="loginForm" class="auth-form" novalidate>
+        <div class="form-group">
+          <label for="email" class="form-label">Email address</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-envelope input-icon"></i>
+            <input type="email" id="email" name="email" class="form-input"
+                   placeholder="you@example.com" autocomplete="email" required />
+          </div>
+          <span class="field-error" id="emailError"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="password" name="password" class="form-input"
+                   placeholder="Your password" autocomplete="current-password" required />
+            <button type="button" class="password-toggle" id="passwordToggle" aria-label="Toggle password visibility">
+              <i class="fa-solid fa-eye" id="passwordToggleIcon"></i>
+            </button>
+          </div>
+          <span class="field-error" id="passwordError"></span>
+        </div>
+
+        <div class="form-row form-row--between">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe" />
+            <span>Remember me</span>
+          </label>
+          <a href="/forgot-password" class="auth-link">Forgot password?</a>
+        </div>
+
+        <div class="form-alert form-alert--success" id="signupSuccess" style="display:none">
+          <i class="fa-solid fa-circle-check"></i>
+          Account created successfully! Please sign in below.
+        </div>
+
+        <div class="form-alert form-alert--error" id="formError" style="display:none"></div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-spinner spinner hidden"></span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script>
+  initLoginForm();
+
+  // Show success banner if coming from the signup page
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('signup') === 'success') {
+    const banner = document.getElementById('signupSuccess');
+    if (banner) banner.style.display = 'block';
+    // Clean the URL without reloading so the param doesn't persist on refresh
+    window.history.replaceState({}, '', '/login');
+  }
+</script>
+{% endblock %}

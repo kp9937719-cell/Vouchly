@@ -132,10 +132,16 @@ function initLoginForm() {
       body: JSON.stringify({ email, password }),
     });
 
-    setButtonLoading(btn, false);
-
     if (ok && data?.success) {
-      window.location.href = '/dashboard';
+      if (window.setFlashToast) {
+        window.setFlashToast('Welcome back! You have logged in successfully.', 'success', 'Login Successful');
+      }
+      if (window.showToast) {
+        window.showToast('Login successful! Taking you to your dashboard...', 'success', 'Login Successful', 2500);
+      }
+      setTimeout(() => {
+        window.location.href = '/dashboard';
+      }, 600);
     } else if (status === 403 && (data?.errors?.unverified || (data?.message && data.message.toLowerCase().includes('verify')))) {
       const unverifiedEmail = data?.errors?.email || email;
       const alertHtml = `
@@ -210,13 +216,23 @@ function initSignupForm() {
     setButtonLoading(btn, false);
 
     if (ok && data?.success) {
-      // Account created — redirect to verification pending page
+      // Show immediate popup toast
+      if (window.showToast) {
+        window.showToast('Your account has been created successfully!', 'success', 'Account Created', 3000);
+      }
+      // Pass flash toast to next page
+      if (window.setFlashToast) {
+        window.setFlashToast('Your account has been created successfully! Please verify your email.', 'success', 'Account Created');
+      }
+      // Redirect to verification pending page
       const verifyLink = data.data?.verify_link || '';
       const emailError = data.data?.email_error || '';
       const emailParam = encodeURIComponent(email);
       const linkParam  = verifyLink ? `&verify_link=${encodeURIComponent(verifyLink)}` : '';
       const errParam   = emailError ? `&email_error=${encodeURIComponent(emailError)}` : '';
-      window.location.href = `/verification-pending?email=${emailParam}${linkParam}${errParam}`;
+      setTimeout(() => {
+        window.location.href = `/verification-pending?email=${emailParam}${linkParam}${errParam}`;
+      }, 700);
     } else {
       // Show per-field errors if the API returned them
       if (data?.errors && typeof data.errors === 'object') {
@@ -320,8 +336,14 @@ function initResetPasswordForm() {
     setButtonLoading(btn, false);
 
     if (ok && data?.success) {
+      if (window.showToast) {
+        window.showToast('Password reset successfully!', 'success', 'Success', 2500);
+      }
+      if (window.setFlashToast) {
+        window.setFlashToast('Password reset successfully! Please log in with your new password.', 'success', 'Password Reset');
+      }
       showFormAlert('formSuccess', 'Password reset successfully! Redirecting to login...', 'success');
-      setTimeout(() => { window.location.href = '/login'; }, 2500);
+      setTimeout(() => { window.location.href = '/login'; }, 1500);
     } else {
       showFormAlert('formError', data?.message || 'Reset failed. The link may have expired.');
     }
